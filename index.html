@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+
+
+<x-dc>
+<helmet data-dc-atomics><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Reading Tracker"><meta name="theme-color" content="#f3f2f2"><title>Reading Tracker</title><link rel="stylesheet" href="_ds/broadsheet-16aaf351-7b06-4673-8732-d90550ff922d/styles.css"><script src="_ds/broadsheet-16aaf351-7b06-4673-8732-d90550ff922d/_ds_bundle.js"></script><script src="image-slot.js"></script><style>html,body{margin:0;height:100%;overflow:hidden;background:#f3f2f2;font-family:"Source Serif 4",Georgia,serif;-webkit-text-size-adjust:100%}#root,x-dc{display:block;height:100dvh}*{-webkit-tap-highlight-color:transparent}.dv-turn{padding:40px 44px 32px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#201e1d;color:#f3f2f2;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 "Source Serif 4",serif;color:#201e1d}.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#201e1d;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 "Source Serif 4",serif;color:rgba(0,0,0,.55)}.dv-next{margin:22px 0 0;font:12px/1.5 "Source Serif 4",serif;color:rgba(0,0,0,.5)}.gl{background:rgba(255,255,255,.5);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid rgba(255,255,255,.65);border-radius:22px;box-shadow:0 8px 26px rgba(56,44,32,.09)}.gl-in{background:rgba(255,255,255,.42);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);border-radius:999px}.pill{border-radius:999px!important}.rt-dark{background:radial-gradient(120% 80% at 18% 0%,#2b2825 0%,#211f1d 45%,#191817 100%)!important;--color-text:#ece7e0;--color-neutral-600:#a29a90;--color-neutral-700:#bab2a8;--color-neutral-800:#dad4cc}.rt-dark .gl{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.13);box-shadow:0 8px 26px rgba(0,0,0,.34)}.rt-dark .gl-in{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.11)}.rt-dark .input,.rt-dark input,.rt-dark textarea,.rt-dark select{color:#ece7e0}.rt-dark .input{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.15)}.rt-dark option{color:#201e1d}.rt-dark .btn-ghost{color:#cfc8c0}@keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(150px)}}</style></helmet>
+<div class="{{ themeClass }}" style="position:relative;height:100dvh;display:flex;flex-direction:column;color:var(--color-text);font-family:var(--font-body);background:radial-gradient(120% 80% at 18% 0%, #fbf7f0 0%, #efe7db 45%, #e3d9cb 100%)">
+
+<div style="flex:1;overflow:auto;padding:calc(env(safe-area-inset-top) + 14px) 18px 18px;-webkit-overflow-scrolling:touch">
+
+<sc-if value="{{ syncBusy }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:8px;padding:7px 13px;margin:0 0 4px;background:rgba(0,136,176,.12);border:1px solid rgba(0,136,176,.3);border-radius:14px;font-size:11.5px;color:var(--color-accent-700)">
+  <div style="flex:1;display:flex;flex-direction:column;gap:5px">
+    <div style="display:flex;align-items:baseline;gap:6px">
+      <span style="flex:1">{{ syncText }}</span>
+      <span style="font-size:10.5px;font-variant-numeric:tabular-nums;font-style:italic;color:var(--color-accent-700)">{{ syncElapsed }}</span>
+    </div>
+    <div style="height:3px;border-radius:2px;background:rgba(0,136,176,.2);overflow:hidden">
+      <div style="{{ syncBarStyle }}"></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ syncFailed }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:8px;padding:7px 13px;margin:0 0 4px;background:rgba(214,0,108,.1);border:1px solid rgba(214,0,108,.32);border-radius:14px;font-size:11.5px;color:var(--color-accent-2-700)">
+  <span style="flex:1">{{ syncText }}</span>
+  <button class="btn btn-ghost" style="font-size:11px;padding:2px 7px" onClick="{{ refresh }}">Retry</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:22px">
+
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="gl-in" style="flex:1;display:flex;align-items:center;gap:8px;padding:9px 16px">
+      <span style="font-size:13px;color:var(--color-neutral-600)">⌕</span>
+      <input style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14px;color:var(--color-text);min-width:0" placeholder="Search your library" value="{{ lq }}" onChange="{{ onSearchLib }}">
+    </div>
+    <button class="gl" style="width:40px;height:40px;flex:none;border-radius:999px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:600;font-size:15px;cursor:pointer;color:inherit;padding:0;overflow:hidden" aria-label="Settings" onClick="{{ goSettings }}">
+      <div style="{{ avatarStyle }}">{{ avatarLetter }}</div>
+    </button>
+  </div>
+
+  <div>
+    <h2 style="margin:0;font-size:32px;letter-spacing:-.025em">My Library</h2>
+    <div style="font-size:12.5px;font-style:italic;color:var(--color-neutral-700);margin-top:2px">Sheet linked · synced {{ syncedAgo }}</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <h6 style="margin:0;color:var(--color-neutral-700)">Continue reading</h6>
+    <sc-for list="{{ reads }}" as="b" hint-placeholder-count="2">
+      <div class="gl" style="display:flex;gap:14px;align-items:flex-start;padding:14px">
+        <div style="{{ b.coverStyle }}">
+          <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+          <div style="{{ b.coverAuthorStyle }}">{{ b.author }}</div>
+        </div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:18px;line-height:1.15">{{ b.title }}</div>
+          <div style="font-size:11.5px;color:var(--color-neutral-700);font-style:italic">{{ b.author }} · {{ b.format }}</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="flex:1;height:4px;border-radius:2px;background:rgba(56,44,32,.14);position:relative"><div style="{{ b.barStyle }}"></div></div>
+            <span style="font-size:11px;color:var(--color-neutral-700)">{{ b.pct }}%</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:2px">
+            <button class="btn btn-primary pill" style="padding:8px 18px;font-size:13px" onClick="{{ b.onResume }}">Update page</button>
+            <span style="font-size:11px;color:var(--color-neutral-600)">p. {{ b.page }} / {{ b.pages }}</span>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{ showFigures }}" hint-placeholder-val="{{ true }}">
+  <div class="gl" style="display:flex;gap:8px;padding:16px 18px;justify-content:space-between">
+    <sc-for list="{{ figures }}" as="f" hint-placeholder-count="3">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-family:var(--font-heading);font-weight:600;font-size:30px;line-height:1">{{ f.n }}</div>
+        <div style="font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700);max-width:84px;line-height:1.3">{{ f.label }}</div>
+      </div>
+    </sc-for>
+  </div>
+  </sc-if>
+
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between">
+      <h6 style="margin:0;color:var(--color-neutral-700)">Book collection</h6>
+      <button class="btn btn-ghost" style="font-size:12px" onClick="{{ goLibrary }}">See all {{ libCount }}</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <sc-for list="{{ shelf }}" as="b" hint-placeholder-count="6">
+        <button style="display:flex;flex-direction:column;gap:6px;background:transparent;border:0;padding:0;cursor:pointer;text-align:left;font-family:inherit;color:inherit" onClick="{{ b.open }}">
+          <div style="{{ b.coverStyle }}">
+            <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+            <div style="{{ b.coverAuthorStyle }}">{{ b.author }}</div>
+          </div>
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:12.5px;line-height:1.2">{{ b.title }}</div>
+          <div style="font-size:11px">{{ b.rating }}</div>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between">
+      <h6 style="margin:0;color:var(--color-neutral-700)">Next up</h6>
+      <button class="btn btn-ghost" style="font-size:12px" onClick="{{ goTbr }}">To Be Read</button>
+    </div>
+    <sc-for list="{{ nextUp }}" as="b" hint-placeholder-count="2">
+      <div class="gl" style="display:flex;align-items:center;gap:12px;padding:10px 14px">
+        <div style="{{ b.coverStyle }}">
+          <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:14.5px;line-height:1.2">{{ b.title }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700);font-style:italic">{{ b.author }}</div>
+        </div>
+        <button class="btn btn-secondary pill" style="font-size:12.5px;flex:none" onClick="{{ b.onStart }}">Start</button>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:9px">
+    <button class="btn btn-primary btn-block pill" style="margin:0;padding:14px;font-size:15.5px" onClick="{{ startTracker }}">Log a book to the Tracker</button>
+    <button class="btn btn-secondary btn-block pill" style="margin:0;padding:14px;font-size:15.5px" onClick="{{ startTbr }}">Add a book to To Be Read</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLibrary }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:18px">
+  <h2 style="margin:0;font-size:30px;letter-spacing:-.025em">Tracker</h2>
+  <div class="gl-in" style="display:flex;align-items:center;gap:8px;padding:10px 16px">
+    <span style="font-size:13px;color:var(--color-neutral-600)">⌕</span>
+    <input style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14px;min-width:0" placeholder="Search title, author or genre" value="{{ lq }}" onChange="{{ onSearchLib }}">
+  </div>
+  <div style="display:flex;align-items:center;gap:9px">
+  <button class="btn btn-secondary pill" style="padding:8px 16px;font-size:13px" onClick="{{ toggleLibFilters }}">Filter &amp; Sort</button>
+  <span style="font-size:11px;font-style:italic;color:var(--color-neutral-700)">{{ libFilterSummary }}</span>
+</div>
+<sc-if value="{{ libFiltersOpen }}" hint-placeholder-val="{{ false }}">
+<div class="gl" style="padding:14px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;flex-direction:column;gap:5px">
+    <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Sort by</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <sc-for list="{{ libSorts }}" as="f" hint-placeholder-count="5">
+        <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+<div style="display:flex;flex-direction:column;gap:9px">
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Status</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ libStatusFilters }}" as="f" hint-placeholder-count="4">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Rating</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ libRatingFilters }}" as="f" hint-placeholder-count="6">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Format</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ libFormatFilters }}" as="f" hint-placeholder-count="5">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Genre</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ libGenreFilters }}" as="f" hint-placeholder-count="8">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{ libFiltering }}" hint-placeholder-val="{{ false }}">
+      <button class="btn btn-ghost" style="align-self:flex-start;font-size:11.5px;padding:2px 0" onClick="{{ clearLibFilters }}">Clear filters</button>
+    </sc-if>
+  </div>
+  </div>
+</sc-if>
+
+<div style="font-size:11px;color:var(--color-neutral-700)">{{ libShown }} of {{ libCount }} books · sheet rows 5–{{ lastRow }}</div>
+  <sc-if value="{{ notLoaded }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px;font-style:italic;color:var(--color-neutral-700)">Pulling the Tracker tab…</div></sc-if>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <sc-for list="{{ libFiltered }}" as="b" hint-placeholder-count="9">
+      <button style="display:flex;flex-direction:column;gap:6px;background:transparent;border:0;padding:0;cursor:pointer;text-align:left;font-family:inherit;color:inherit" onClick="{{ b.open }}">
+        <div style="{{ b.coverStyle }}">
+          <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+          <div style="{{ b.coverAuthorStyle }}">{{ b.author }}</div>
+        </div>
+        <div style="font-family:var(--font-heading);font-weight:600;font-size:12.5px;line-height:1.2">{{ b.title }}</div>
+        <div style="font-size:11px">{{ b.rating }}</div>
+      </button>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:18px">
+  <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ closeDetail }}">← Back</button>
+  <div class="gl" style="display:flex;gap:16px;padding:16px;align-items:flex-start">
+    <div style="{{ detail.coverStyle }}">
+      <div style="{{ detail.coverTitleStyle }}">{{ detail.title }}</div>
+      <div style="{{ detail.coverAuthorStyle }}">{{ detail.author }}</div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+      <h3 style="margin:0;font-size:21px;line-height:1.12">{{ detail.title }}</h3>
+      <div style="font-size:12px;font-style:italic;color:var(--color-neutral-700)">{{ detail.author }}</div>
+      <div style="font-size:17px;letter-spacing:1px;margin-top:2px">{{ detail.rating }}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">
+        <span class="tag tag-neutral pill">{{ detail.status }}</span>
+        <span class="tag tag-neutral pill">{{ detail.genre }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="gl" style="padding:6px 16px">
+    <sc-for list="{{ detailRows }}" as="r" hint-placeholder-count="5">
+      <div style="display:flex;gap:12px;padding:9px 0;font-size:13px;border-bottom:1px solid rgba(56,44,32,.08)">
+        <span style="width:96px;flex:none;color:var(--color-neutral-700);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase">{{ r.k }}</span>
+        <span style="flex:1;min-width:0">{{ r.v }}</span>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ detail.hasSummary }}" hint-placeholder-val="{{ true }}">
+  <div class="gl" style="padding:16px;display:flex;flex-direction:column;gap:6px">
+    <h6 style="margin:0;color:var(--color-neutral-700)">Summary</h6>
+    <p style="margin:0;font-size:13px;line-height:1.55;text-wrap:pretty;color:var(--color-neutral-800)">{{ detail.summary }}</p>
+  </div>
+  </sc-if>
+  <sc-if value="{{ detail.hasNotes }}" hint-placeholder-val="{{ true }}">
+  <div class="gl" style="padding:16px;display:flex;flex-direction:column;gap:6px">
+    <h6 style="margin:0;color:var(--color-neutral-700)">Your review</h6>
+    <p style="margin:0;font-size:13.5px;line-height:1.55;text-wrap:pretty">{{ detail.notes }}</p>
+  </div>
+  </sc-if>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-primary pill" style="font-size:13px" onClick="{{ detail.onUpdate }}">Update page</button>
+    <button class="btn btn-secondary pill" style="font-size:13px" onClick="{{ noop }}">Open row in sheet</button>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTbr }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <div>
+    <h2 style="margin:0;font-size:30px;letter-spacing:-.025em">To Be Read</h2>
+    <div style="font-size:12px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">Grouped by Reading Order · {{ tbrCount }} books</div>
+  </div>
+
+  <sc-if value="{{ hasRoll }}" hint-placeholder-val="{{ false }}">
+  <div class="gl" style="display:flex;gap:13px;padding:14px;align-items:center;border:1px solid rgba(214,0,108,.3);background:rgba(214,0,108,.06)">
+    <div style="{{ roll.coverStyle }}">
+      <div style="{{ roll.coverTitleStyle }}">{{ roll.title }}</div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-accent-2)">Read this one</div>
+      <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;line-height:1.15">{{ roll.title }}</div>
+      <div style="font-size:11px;color:var(--color-neutral-700);font-style:italic">{{ roll.author }} · {{ roll.bucket }}</div>
+      <div style="display:flex;gap:6px;margin-top:5px">
+        <button class="btn btn-primary pill" style="padding:5px 12px;font-size:12.5px" onClick="{{ roll.onStart }}">Start reading</button>
+        <button class="btn btn-ghost" style="padding:5px 9px;font-size:12.5px" onClick="{{ rollAgain }}">Roll again</button>
+        <button class="btn btn-ghost" style="padding:5px 9px;font-size:12.5px" onClick="{{ clearRoll }}">Dismiss</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <button class="btn btn-secondary btn-block pill" style="padding:11px;font-size:14px" onClick="{{ rollAgain }}">{{ rollLabel }}</button>
+
+  <sc-for list="{{ tbrGroups }}" as="g" hint-placeholder-count="3">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;align-items:baseline;gap:7px;padding:0 3px">
+        <h6 style="margin:0;color:var(--color-neutral-700)">{{ g.name }}</h6>
+        <span style="font-size:11px;color:var(--color-neutral-600);font-style:italic">{{ g.count }}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <sc-for list="{{ g.books }}" as="b" hint-placeholder-count="2">
+          <div class="gl" style="display:flex;align-items:center;gap:11px;padding:10px 13px">
+        <div style="{{ b.coverStyle }}">
+          <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:14.5px;line-height:1.2">{{ b.title }}</div>
+          <div style="font-size:10.5px;color:var(--color-neutral-700);font-style:italic">{{ b.author }} · {{ b.price }}</div>
+        </div>
+        <div style="display:flex;gap:3px;flex:none;align-items:center">
+          <button class="btn btn-secondary pill" style="padding:3px 8px;font-size:13px" aria-label="Move up" onClick="{{ b.up }}">↑</button>
+          <button class="btn btn-secondary pill" style="padding:3px 8px;font-size:13px" aria-label="Move down" onClick="{{ b.down }}">↓</button>
+          <button class="btn btn-ghost" style="font-size:12px;padding:3px 7px" onClick="{{ b.onMove }}">Move</button>
+          <button class="btn btn-ghost" style="font-size:12px;padding:3px 7px" onClick="{{ b.onStart }}">Start</button>
+        </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+  <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ startTbr }}">Add a book to this list</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBucketPick }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:18px">
+  <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ cancelBucket }}">← Cancel</button>
+  <div>
+    <h2 style="margin:0;font-size:27px;letter-spacing:-.025em">Move {{ bucketTitle }}</h2>
+    <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800);margin-top:6px">Writes to the Reading Order cell. Only values in your dropdown are allowed.</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ bucketOptions }}" as="o" hint-placeholder-count="8">
+      <button style="{{ o.rowStyle }}" onClick="{{ o.pick }}">
+        <span style="flex:1;font-family:var(--font-heading);font-weight:600;font-size:14.5px">{{ o.name }}</span>
+        <span style="font-size:11px;color:var(--color-neutral-700);font-style:italic">{{ o.hint }}</span>
+      </button>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isScan }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ backToFind }}">← Back</button>
+  <h2 style="margin:0;font-size:26px;letter-spacing:-.025em">{{ scanTitle }}</h2>
+  <div style="position:relative;width:100%;aspect-ratio:3/4;border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#3a342c,#22201c);display:flex;align-items:center;justify-content:center">
+    <div style="width:70%;height:44%;border-radius:14px;border:2px solid rgba(255,255,255,.7);position:relative;overflow:hidden">
+      <div style="position:absolute;left:0;right:0;height:2px;background:var(--color-accent);box-shadow:0 0 12px var(--color-accent);animation:scanline 1.1s ease-in-out infinite alternate"></div>
+    </div>
+    <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,.75);font-style:italic">{{ scanHint }}</div>
+  </div>
+  <sc-if value="{{ scanFound }}" hint-placeholder-val="{{ true }}">
+  <div class="gl" style="display:flex;gap:14px;padding:14px;align-items:center">
+    <div style="{{ scanBook.coverStyle }}">
+      <div style="{{ scanBook.coverTitleStyle }}">{{ scanBook.title }}</div>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:var(--font-heading);font-weight:600;font-size:16px;line-height:1.2">{{ scanBook.title }}</div>
+      <div style="font-size:11.5px;color:var(--color-neutral-700);font-style:italic">{{ scanBook.author }} · {{ scanBook.pages }} pp</div>
+    </div>
+  </div>
+  <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ acceptScan }}">Use this book</button>
+  <button class="btn btn-ghost" style="font-size:13px" onClick="{{ rescan }}">Scan again</button>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isFlow }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:22px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ cancel }}">← Cancel</button>
+    <h2 style="margin:0;font-size:27px;letter-spacing:-.025em">{{ flowTitle }}</h2>
+    <div style="display:flex;gap:6px;align-items:center">
+      <sc-for list="{{ stepDots }}" as="d" hint-placeholder-count="4">
+        <div style="{{ d.style }}"></div>
+      </sc-for>
+      <span style="font-size:11px;color:var(--color-neutral-700);margin-left:6px">{{ stepLabel }}</span>
+    </div>
+  </div>
+
+  <sc-if value="{{ atFind }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="gl-in" style="display:flex;align-items:center;gap:8px;padding:11px 16px">
+      <span style="font-size:13px;color:var(--color-neutral-600)">⌕</span>
+      <input style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14px;min-width:0" placeholder="Title or author" value="{{ q }}" onChange="{{ onSearch }}">
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary pill" style="font-size:12.5px" onClick="{{ openScan }}">Scan barcode</button>
+      <button class="btn btn-secondary pill" style="font-size:12.5px" onClick="{{ openCoverScan }}">Photograph cover</button>
+      <button class="btn btn-ghost" style="font-size:12.5px" onClick="{{ manual }}">By hand</button>
+    </div>
+    <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <h6 style="margin:0;color:var(--color-neutral-700)">Results</h6>
+      <sc-for list="{{ results }}" as="r" hint-placeholder-count="3">
+        <button style="{{ r.rowStyle }}" onClick="{{ r.onClick }}">
+          <div style="{{ r.coverStyle }}">
+            <div style="{{ r.coverTitleStyle }}">{{ r.title }}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-heading);font-weight:600;font-size:15px;line-height:1.2">{{ r.title }}</div>
+            <div style="font-size:11px;color:var(--color-neutral-700);font-style:italic">{{ r.author }} · {{ r.pages }} pp · {{ r.genre }}</div>
+          </div>
+        </button>
+      </sc-for>
+      <div style="font-size:11px;color:var(--color-neutral-600);font-style:italic">Author, page length and cover fill in automatically.</div>
+    </div>
+    </sc-if>
+    <sc-if value="{{ noResults }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:12.5px;color:var(--color-neutral-700);font-style:italic">Nothing matched “{{ q }}”. <button class="btn btn-ghost" style="font-size:12.5px" onClick="{{ manual }}">Enter it by hand</button></div>
+    </sc-if>
+    <sc-if value="{{ pickedBook }}" hint-placeholder-val="{{ true }}">
+    <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ next }}">Continue with {{ draftTitle }}</button>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ atBasics }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="field"><label>Title</label><input class="input pill" style="padding:9px 15px" name="title" placeholder="Start typing — Open Library will suggest" value="{{ draftTitle }}" onChange="{{ onField }}"></div>
+    <div class="field"><label>Author</label><input class="input pill" style="padding:9px 15px" name="author" placeholder="Kennedy Ryan" value="{{ draftAuthor }}" onChange="{{ onField }}"></div>
+    <sc-if value="{{ hasSuggestions }}" hint-placeholder-val="{{ false }}">
+    <div class="gl" style="padding:7px;display:flex;flex-direction:column;gap:3px;max-height:236px;overflow:auto">
+      <div style="font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600);padding:4px 8px 2px">Open Library matches</div>
+      <sc-for list="{{ suggestions }}" as="r" hint-placeholder-count="4">
+        <button style="{{ r.rowStyle }}" onClick="{{ r.onClick }}">
+          <div style="{{ r.coverStyle }}">
+            <div style="{{ r.coverTitleStyle }}">{{ r.title }}</div>
+          </div>
+          <div style="flex:1;min-width:0;text-align:left">
+            <div style="font-family:var(--font-heading);font-weight:600;font-size:13.5px;line-height:1.2">{{ r.title }}</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);font-style:italic">{{ r.line }}</div>
+          </div>
+        </button>
+      </sc-for>
+    </div>
+    </sc-if>
+    <sc-if value="{{ lookupNote }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:11px;align-items:center;padding:11px 13px;border-radius:16px;background:rgba(0,136,176,.09);border:1px solid rgba(0,136,176,.24)">
+        <div style="{{ lookupCoverStyle }}"></div>
+        <div style="flex:1;min-width:0;font-size:11.5px;line-height:1.45;color:var(--color-accent-800)">{{ lookupNote }}</div>
+      </div>
+    </sc-if>
+    <div class="field"><label>Genre</label>
+      <select class="input pill" style="padding:9px 15px;margin-top:4px" name="genre" value="{{ draftGenre }}" onChange="{{ onGenreSelect }}">
+        <sc-for list="{{ genreOptions }}" as="g" hint-placeholder-count="17">
+          <option value="{{ g.value }}" selected="{{ g.on }}">{{ g.label }}</option>
+        </sc-for>
+      </select>
+      <sc-if value="{{ genreNew }}" hint-placeholder-val="{{ false }}">
+        <input class="input pill" style="padding:9px 15px;margin-top:7px" name="genre" placeholder="Name the new genre" value="{{ draftGenre }}" onChange="{{ onField }}">
+      </sc-if>
+    </div>
+    <div class="field"><label>Summary</label>
+      <textarea class="input" style="border-radius:18px;padding:12px 15px;min-height:96px" name="summary" placeholder="Fills in from Open Library when you pick a match — edit freely" value="{{ draftSummary }}" onChange="{{ onField }}"></textarea>
+      <sc-if value="{{ summaryFilled }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:10.5px;color:var(--color-neutral-600);font-style:italic;margin-top:5px">Pulled in automatically. Rewrite it however you like.</div>
+      </sc-if>
+    </div>
+    <div class="field"><label>Status</label>
+      <div class="seg pill" style="margin-top:4px;overflow:hidden">
+        <sc-for list="{{ statuses }}" as="s" hint-placeholder-count="3">
+          <label class="seg-opt"><input type="radio" name="status" checked="{{ s.on }}" onChange="{{ s.pick }}">{{ s.label }}</label>
+        </sc-for>
+      </div>
+    </div>
+    <div class="field"><label>Format</label>
+      <div class="seg pill" style="margin-top:4px;overflow:hidden">
+        <sc-for list="{{ formats }}" as="f" hint-placeholder-count="3">
+          <label class="seg-opt"><input type="radio" name="format" checked="{{ f.on }}" onChange="{{ f.pick }}">{{ f.label }}</label>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div class="field" style="flex:1"><label>Start date</label><input class="input pill" style="padding:9px 15px" type="date" name="start" value="{{ draftStart }}" onChange="{{ onField }}"></div>
+      <div class="field" style="flex:1"><label>Finish date</label><input class="input pill" style="padding:9px 15px" type="date" name="finish" value="{{ draftFinish }}" onChange="{{ onField }}"></div>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div class="field" style="flex:1"><label>Current page</label><input class="input pill" style="padding:9px 15px" name="page" value="{{ draftPage }}" onChange="{{ onField }}"></div>
+      <div class="field" style="flex:1"><label>Page length</label><input class="input pill" style="padding:9px 15px" name="pages" value="{{ draftPages }}" onChange="{{ onField }}"></div>
+    </div>
+    <div class="field"><label>Series (optional)</label>
+      <select class="input pill" style="padding:9px 15px;margin-top:4px" name="series" value="{{ draftSeries }}" onChange="{{ onSeriesSelect }}">
+        <sc-for list="{{ seriesOptions }}" as="o" hint-placeholder-count="12">
+          <option value="{{ o.value }}" selected="{{ o.on }}">{{ o.label }}</option>
+        </sc-for>
+      </select>
+      <sc-if value="{{ seriesNew }}" hint-placeholder-val="{{ false }}">
+        <input class="input pill" style="padding:9px 15px;margin-top:7px" name="series" placeholder="Name the new series" value="{{ draftSeries }}" onChange="{{ onField }}">
+      </sc-if>
+    </div>
+    <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ next }}">Next — how it felt</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ atFeelings }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:22px">
+    <div class="field"><label>Rating</label>
+      <button style="{{ ratingBtnStyle }}" onClick="{{ toggleRating }}">
+        <span style="flex:1;text-align:left">{{ ratingLabel }}</span>
+        <span style="font-size:11px;color:var(--color-neutral-600)">{{ ratingCaret }}</span>
+      </button>
+      <sc-if value="{{ ratingOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="gl" style="margin-top:7px;padding:7px;display:flex;flex-direction:column;gap:3px">
+        <input class="input pill" style="padding:8px 14px;font-size:13px" placeholder="Search ratings" value="{{ ratingQuery }}" onChange="{{ onRatingSearch }}">
+        <sc-for list="{{ ratingOptions }}" as="r" hint-placeholder-count="5">
+          <button style="{{ r.style }}" onClick="{{ r.pick }}">
+            <span style="font-size:17px;letter-spacing:1px">{{ r.emoji }}</span>
+            <span style="font-size:11.5px;color:var(--color-neutral-700);margin-left:auto">{{ r.word }}</span>
+          </button>
+        </sc-for>
+        <sc-if value="{{ ratingEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11.5px;font-style:italic;color:var(--color-neutral-700);padding:6px 9px">No rating matched.</div>
+        </sc-if>
+      </div>
+      </sc-if>
+    </div>
+
+    <div class="field"><label>How did this book make you feel?</label>
+      <button style="{{ vibeBtnStyle }}" onClick="{{ toggleVibe }}">
+        <span style="flex:1;text-align:left">{{ vibeLabel }}</span>
+        <span style="font-size:11px;color:var(--color-neutral-600)">{{ vibeCaret }}</span>
+      </button>
+      <sc-if value="{{ vibeOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="gl" style="margin-top:7px;padding:7px;display:flex;flex-direction:column;gap:3px;max-height:250px;overflow:auto">
+        <input class="input pill" style="padding:8px 14px;font-size:13px" placeholder="Search feelings" value="{{ vibeQuery }}" onChange="{{ onVibeSearch }}">
+        <sc-for list="{{ vibeOptions }}" as="v" hint-placeholder-count="8">
+          <button style="{{ v.style }}" onClick="{{ v.pick }}">{{ v.label }}</button>
+        </sc-for>
+        <sc-if value="{{ vibeEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:11.5px;font-style:italic;color:var(--color-neutral-700);padding:6px 9px">Nothing matched. <button class="btn btn-ghost" style="font-size:11.5px;padding:0 4px" onClick="{{ useVibeQuery }}">Use it anyway</button></div>
+        </sc-if>
+      </div>
+      </sc-if>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <label class="radio"><input type="checkbox" checked="{{ favOn }}" onChange="{{ toggleFav }}"><span class="dot"></span>A favourite character came out of this one</label>
+      <sc-if value="{{ favOn }}" hint-placeholder-val="{{ true }}">
+        <div class="field"><input class="input pill" style="padding:9px 15px" name="favName" placeholder="Character name" value="{{ draftFav }}" onChange="{{ onField }}"></div>
+      </sc-if>
+    </div>
+    <div class="field"><label>Notes / review</label><textarea class="input" style="border-radius:18px;padding:12px 15px" name="notes" placeholder="Say whatever you actually thought" onChange="{{ onField }}" value="{{ draftNotes }}"></textarea></div>
+    <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ next }}">{{ reviewCta }}</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ atTbrDetails }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div class="field"><label>Title</label><input class="input pill" style="padding:9px 15px" name="title" value="{{ draftTitle }}" onChange="{{ onField }}"></div>
+    <div class="field"><label>Author</label><input class="input pill" style="padding:9px 15px" name="author" value="{{ draftAuthor }}" onChange="{{ onField }}"></div>
+    <div class="field"><label>Price</label><input class="input pill" style="padding:9px 15px" name="price" placeholder="On Kindle Unlimited · Kindle: $11.99" value="{{ draftPrice }}" onChange="{{ onField }}"></div>
+    <label class="radio"><input type="checkbox" checked="{{ boughtOn }}" onChange="{{ toggleBought }}"><span class="dot"></span>Already bought</label>
+    <div class="field"><label>Info</label><input class="input pill" style="padding:9px 15px" name="info" placeholder="Dark rom-com (serial killers)" value="{{ draftInfo }}" onChange="{{ onField }}"></div>
+    <div class="field"><label>Notes</label><textarea class="input" style="border-radius:18px;padding:12px 15px" name="notes" placeholder="Why it's on the list" value="{{ draftNotes }}" onChange="{{ onField }}"></textarea></div>
+    <div style="font-size:12px;color:var(--color-neutral-700);font-style:italic">Lands at position {{ nextOrder }} — move it up the list later.</div>
+    <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ next }}">{{ reviewCta }}</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ atReview }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="font-size:13px;line-height:1.5">Writing one new row to <strong>{{ targetSheet }}</strong> at <strong>row {{ targetRow }}</strong>.</div>
+    <div class="gl" style="padding:8px 16px">
+      <sc-for list="{{ writePlan }}" as="w" hint-placeholder-count="6">
+        <div style="display:flex;gap:10px;padding:7px 0;font-size:12.5px">
+          <span style="width:82px;flex:none;color:var(--color-neutral-700);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase">{{ w.k }}</span>
+          <span style="flex:1;min-width:0">{{ w.v }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;line-height:1.55;color:var(--color-neutral-800);border-left:2px solid var(--color-accent);padding-left:12px">
+      Untouched: <strong>{{ untouched }}</strong> — your formula columns and your scripts. Nothing above row {{ targetRow }} is edited.
+    </div>
+    <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ commit }}">Write the row</button>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ isSaving }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <sc-for list="{{ saveSteps }}" as="s" hint-placeholder-count="3">
+      <div style="display:flex;gap:10px;align-items:baseline">
+        <span style="{{ s.markStyle }}">{{ s.mark }}</span>
+        <span style="{{ s.textStyle }}">{{ s.label }}</span>
+      </div>
+    </sc-for>
+    <sc-if value="{{ isFailed }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+      <div style="font-family:var(--font-heading);font-weight:600;font-size:20px">Nothing was written.</div>
+      <div style="font-size:13px;color:var(--color-neutral-800);line-height:1.5">{{ syncText }}</div>
+      <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ commit }}">Try again</button>
+      <button class="btn btn-ghost" style="font-size:13px" onClick="{{ cancel }}">Back</button>
+    </div>
+    </sc-if>
+    <sc-if value="{{ isDone }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+      <div style="font-family:var(--font-heading);font-weight:600;font-size:20px">{{ doneHead }}</div>
+      <div style="font-size:13px;color:var(--color-neutral-800);line-height:1.5">{{ doneBody }}</div>
+      <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ finish }}">Done</button>
+      <button class="btn btn-ghost" style="font-size:13px" onClick="{{ again }}">Add another</button>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPromote }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ cancel }}">← Cancel</button>
+  <h2 style="margin:0;font-size:27px;letter-spacing:-.025em">Start {{ promoteTitle }}</h2>
+  <div style="font-size:13px;line-height:1.55;color:var(--color-neutral-800)">This runs your existing sheet script: the row moves from To Be Read into Tracker, marked as started.</div>
+  <div class="field"><label>Start date</label><input class="input pill" style="padding:9px 15px" type="date" name="start" value="{{ draftStart }}" onChange="{{ onField }}"></div>
+  <div class="field"><label>Format</label>
+    <div class="seg pill" style="margin-top:4px;overflow:hidden">
+      <sc-for list="{{ formats }}" as="f" hint-placeholder-count="3">
+        <label class="seg-opt"><input type="radio" name="pformat" checked="{{ f.on }}" onChange="{{ f.pick }}">{{ f.label }}</label>
+      </sc-for>
+    </div>
+  </div>
+  <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ commit }}">Move it to Tracker</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isUpdate }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px">
+  <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ cancel }}">← Cancel</button>
+  <h2 style="margin:0;font-size:27px;letter-spacing:-.025em">{{ promoteTitle }}</h2>
+  <div style="font-size:12.5px;color:var(--color-neutral-700);font-style:italic">Updates Current Page on its existing Tracker row — nothing else.</div>
+  <div class="field"><label>Current page</label><input class="input pill" style="padding:9px 15px" name="page" value="{{ draftPage }}" onChange="{{ onField }}"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <sc-for list="{{ pageBumps }}" as="p" hint-placeholder-count="4">
+      <button class="btn btn-secondary pill" style="font-size:13px" onClick="{{ p.add }}">{{ p.label }}</button>
+    </sc-for>
+  </div>
+  <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ commit }}">Save the page</button>
+  <button class="btn btn-ghost" style="font-size:13px" onClick="{{ markFinished }}">I finished it — log the rest</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:26px">
+  <div>
+    <h2 style="margin:0;font-size:30px;letter-spacing:-.025em">Settings</h2>
+    <div style="font-size:12px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">Sheet linked · synced {{ syncedAgo }}</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:11px">
+    <h6 style="margin:0;color:var(--color-neutral-700)">App logo</h6>
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="gl" style="width:92px;height:92px;flex:none;border-radius:22px;padding:5px;box-sizing:border-box">
+        <image-slot id="rt-app-icon" style="width:82px;height:82px" shape="rounded" radius="17" placeholder="Drop logo"></image-slot>
+      </div>
+      <div style="flex:1;min-width:0;font-size:11.5px;line-height:1.5;color:var(--color-neutral-700);font-style:italic">Drop or pick a picture. It becomes the badge beside the search box, and it stays put across reloads.</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:11px">
+    <h6 style="margin:0;color:var(--color-neutral-700)">Appearance</h6>
+    <div class="gl" style="display:flex;padding:4px;border-radius:999px">
+      <sc-for list="{{ themeModes }}" as="m" hint-placeholder-count="2">
+        <button style="{{ m.style }}" onClick="{{ m.pick }}">{{ m.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:11px">
+    <h6 style="margin:0;color:var(--color-neutral-700)">Passcode</h6>
+    <div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700);font-style:italic">{{ pinStatus }}</div>
+
+    <sc-if value="{{ pinEditing }}" hint-placeholder-val="{{ true }}">
+    <div class="gl" style="padding:15px;display:flex;flex-direction:column;gap:12px">
+      <sc-if value="{{ pinHasCurrent }}" hint-placeholder-val="{{ false }}">
+        <div class="field"><label>Current PIN</label><input class="input pill" style="padding:9px 15px" type="password" inputmode="numeric" maxlength="4" name="cur" placeholder="••••" value="{{ pinCur }}" onChange="{{ onPinField }}"></div>
+      </sc-if>
+      <div class="field"><label>{{ pinNewLabel }}</label><input class="input pill" style="padding:9px 15px" type="password" inputmode="numeric" maxlength="4" name="next" placeholder="4 digits" value="{{ pinNext }}" onChange="{{ onPinField }}"></div>
+      <div class="field"><label>Confirm</label><input class="input pill" style="padding:9px 15px" type="password" inputmode="numeric" maxlength="4" name="confirm" placeholder="4 digits" value="{{ pinConfirm }}" onChange="{{ onPinField }}"></div>
+      <sc-if value="{{ pinError }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:11.5px;color:var(--color-accent-2-700)">{{ pinError }}</div>
+      </sc-if>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary pill" style="flex:1;padding:10px;font-size:13.5px" onClick="{{ savePin }}">Save PIN</button>
+        <button class="btn btn-ghost" style="padding:10px 14px;font-size:13.5px" onClick="{{ cancelPin }}">Cancel</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ pinIdle }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary pill" style="padding:9px 16px;font-size:13px" onClick="{{ startPin }}">{{ pinCta }}</button>
+      <sc-if value="{{ pinSet }}" hint-placeholder-val="{{ false }}">
+        <button class="btn btn-ghost" style="padding:9px 14px;font-size:13px" onClick="{{ removePin }}">Turn off</button>
+        <button class="btn btn-ghost" style="padding:9px 14px;font-size:13px" onClick="{{ lockNow }}">Lock now</button>
+      </sc-if>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isHof }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:26px">
+  <div>
+    <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--color-accent-2)">Reading Hall Of Fame</div>
+    <h2 style="margin:4px 0 0;font-size:29px;letter-spacing:-.025em">Five Star Reads</h2>
+    <div style="font-size:12.5px;color:var(--color-neutral-700);font-style:italic;margin-top:4px">Where standout reads and unforgettable characters come together</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:15px">
+    <sc-for list="{{ hofBooks }}" as="b" hint-placeholder-count="9">
+      <button style="{{ b.wrapStyle }}" onClick="{{ b.onOpen }}">
+        <div style="{{ b.coverStyle }}">
+          <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+        </div>
+        <div style="font-family:var(--font-heading);font-weight:600;font-size:12.5px;line-height:1.2">{{ b.title }}</div>
+        <div style="font-size:10px;color:var(--color-neutral-700);font-style:italic">{{ b.author }}</div>
+      </button>
+    </sc-for>
+  </div>
+  <sc-if value="{{ hofPick }}" hint-placeholder-val="{{ false }}">
+  <div class="gl" style="padding:16px;display:flex;flex-direction:column;gap:7px">
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <div style="flex:1;font-family:var(--font-heading);font-weight:600;font-size:18px;line-height:1.15">{{ hofNote.title }}</div>
+      <button class="btn btn-ghost" style="font-size:11.5px;padding:2px 6px" onClick="{{ closeHof }}">Close</button>
+    </div>
+    <div style="font-size:13px;line-height:1.55;color:var(--color-neutral-800)">{{ hofNote.note }}</div>
+  </div>
+  </sc-if>
+
+  <div>
+    <h3 style="margin:0;font-size:23px;letter-spacing:-.02em">Character Spotlight</h3>
+    <div style="font-size:11.5px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">Ranked, spiced and swooned over</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:11px">
+    <sc-for list="{{ hofChars }}" as="c" hint-placeholder-count="6">
+      <div class="gl" style="display:flex;gap:13px;padding:13px">
+        <div style="{{ c.photoStyle }}"></div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-2)">{{ c.rank }}</div>
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:17px;line-height:1.15">{{ c.name }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700);font-style:italic">{{ c.book }}</div>
+          <div style="font-size:13px;letter-spacing:.5px;margin-top:1px">{{ c.marks }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div>
+    <h3 style="margin:0;font-size:23px;letter-spacing:-.02em">Bookish Bests</h3>
+    <div style="font-size:11.5px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">Awards the sheet works out for itself</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+    <sc-for list="{{ hofBests }}" as="b" hint-placeholder-count="8">
+      <div class="gl" style="padding:13px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent);line-height:1.3">{{ b.label }}</div>
+        <div style="font-family:var(--font-heading);font-weight:600;font-size:15px;line-height:1.2">{{ b.value }}</div>
+        <div style="font-size:10px;color:var(--color-neutral-700);font-style:italic;line-height:1.35">{{ b.sub }}</div>
+        <div style="font-size:11px;color:var(--color-neutral-800)">{{ b.note }}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div>
+    <h3 style="margin:0;font-size:23px;letter-spacing:-.02em">Your Reading Year at a Glance</h3>
+    <div style="font-size:11.5px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">{{ calStat }}</div>
+  </div>
+
+  <div style="display:flex;align-items:flex-end;gap:12px">
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:baseline;gap:9px">
+        <div style="font-family:var(--font-heading);font-size:54px;line-height:.88;letter-spacing:-.045em">{{ calNum }}</div>
+        <div style="font-size:12px;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">{{ calYear }}</div>
+      </div>
+      <div style="font-family:var(--font-heading);font-style:italic;font-size:29px;line-height:1.05;color:var(--color-neutral-600);margin-top:1px">{{ calMonthName }}</div>
+    </div>
+    <div style="display:flex;gap:5px;flex:none;padding-bottom:5px">
+      <button class="btn btn-ghost" style="font-size:19px;padding:2px 10px;line-height:1" aria-label="Previous month" onClick="{{ calPrev }}">‹</button>
+      <button class="btn btn-ghost" style="font-size:19px;padding:2px 10px;line-height:1" aria-label="Next month" onClick="{{ calNext }}">›</button>
+    </div>
+  </div>
+
+  <div class="gl" style="display:flex;padding:4px;border-radius:999px">
+    <sc-for list="{{ calModes }}" as="m" hint-placeholder-count="2">
+      <button style="{{ m.style }}" onClick="{{ m.pick }}">{{ m.label }}</button>
+    </sc-for>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px">
+    <sc-for list="{{ calDows }}" as="d" hint-placeholder-count="7">
+      <div style="font-size:9.5px;text-align:center;color:var(--color-neutral-600);letter-spacing:.06em">{{ d.label }}</div>
+    </sc-for>
+    <sc-for list="{{ calCells }}" as="c" hint-placeholder-count="35">
+      <button style="{{ c.style }}" onClick="{{ c.onOpen }}">
+        <span style="{{ c.numStyle }}">{{ c.day }}</span>
+        <div style="{{ c.thumbStyle }}"></div>
+      </button>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMovies }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:18px">
+  <div>
+    <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--color-accent)">Movie &amp; Show Adaptations</div>
+    <h2 style="margin:4px 0 0;font-size:30px;letter-spacing:-.025em">Movie Recs</h2>
+    <div style="font-size:12px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">{{ movieShown }} of {{ movieCount }} titles</div>
+  </div>
+
+  <sc-if value="{{ hasUpcoming }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;flex-direction:column;gap:9px">
+    <h6 style="margin:0;color:var(--color-accent-2)">Coming up</h6>
+    <sc-for list="{{ upcoming }}" as="m" hint-placeholder-count="2">
+      <div class="gl" style="display:flex;gap:12px;padding:12px 13px;align-items:center;border:1px solid rgba(214,0,108,.28);background:rgba(214,0,108,.05)">
+        <div style="{{ m.coverStyle }}">
+          <div style="{{ m.coverTitleStyle }}">{{ m.title }}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:15px;line-height:1.2">{{ m.title }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700);font-style:italic;margin-top:2px">{{ m.where }}</div>
+          <div style="font-size:11.5px;color:var(--color-accent-2);margin-top:3px">{{ m.countdown }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  </sc-if>
+
+  <div class="gl-in" style="display:flex;align-items:center;gap:8px;padding:10px 16px">
+    <span style="font-size:13px;color:var(--color-neutral-600)">⌕</span>
+    <input style="flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14px;min-width:0" placeholder="Search title or vibe" value="{{ mq }}" onChange="{{ onSearchMovies }}">
+  </div>
+  <div style="display:flex;align-items:center;gap:9px">
+  <button class="btn btn-secondary pill" style="padding:8px 16px;font-size:13px" onClick="{{ toggleMovieFilters }}">Filter &amp; Sort</button>
+  <span style="font-size:11px;font-style:italic;color:var(--color-neutral-700)">{{ movieFilterSummary }}</span>
+</div>
+<sc-if value="{{ movieFiltersOpen }}" hint-placeholder-val="{{ false }}">
+<div class="gl" style="padding:14px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;flex-direction:column;gap:5px">
+    <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Sort by</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <sc-for list="{{ movieSorts }}" as="f" hint-placeholder-count="4">
+        <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+      </sc-for>
+    </div>
+  </div>
+<div style="display:flex;flex-direction:column;gap:9px">
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Where to watch</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ movieFilters }}" as="f" hint-placeholder-count="4">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Ranking</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ movieRankFilters }}" as="f" hint-placeholder-count="5">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--color-neutral-600)">Spice level</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <sc-for list="{{ movieSpiceFilters }}" as="f" hint-placeholder-count="4">
+          <button style="{{ f.style }}" onClick="{{ f.pick }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <sc-if value="{{ moviesFiltered }}" hint-placeholder-val="{{ false }}">
+      <button class="btn btn-ghost" style="align-self:flex-start;font-size:11.5px;padding:2px 0" onClick="{{ clearMovieFilters }}">Clear filters</button>
+    </sc-if>
+  </div>
+
+  </div>
+</sc-if>
+
+<div style="display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ movieList }}" as="m" hint-placeholder-count="6">
+      <div class="gl" style="display:flex;gap:12px;padding:12px 13px">
+        <div style="{{ m.coverStyle }}">
+          <div style="{{ m.coverTitleStyle }}">{{ m.title }}</div>
+        </div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+          <div style="font-family:var(--font-heading);font-weight:600;font-size:15.5px;line-height:1.2">{{ m.title }}</div>
+          <div style="font-size:10.5px;color:var(--color-neutral-700);font-style:italic">{{ m.meta }}</div>
+          <div style="font-size:14px;letter-spacing:.5px">{{ m.ranking }}</div>
+          <div style="font-size:11.5px;line-height:1.45;color:var(--color-neutral-800)">{{ m.vibe }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ noMovies }}" hint-placeholder-val="{{ false }}">
+    <div style="font-size:12.5px;font-style:italic;color:var(--color-neutral-700)">Nothing matched.</div>
+  </sc-if>
+
+  <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ goAddMovie }}">Add a movie or show</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isAddMovie }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:16px">
+  <button class="btn btn-ghost" style="align-self:flex-start;font-size:12px;padding-left:0" onClick="{{ goMovies }}">← Back</button>
+  <div>
+    <h2 style="margin:0;font-size:27px;letter-spacing:-.025em">Add to Movie Recs</h2>
+    <div style="font-size:12.5px;color:var(--color-neutral-700);font-style:italic;margin-top:4px">Appends one row to the Movie Recs tab.</div>
+  </div>
+  <div class="field"><label>Name</label><input class="input pill" style="padding:9px 15px" name="title" placeholder="Off Campus" value="{{ draftTitle }}" onChange="{{ onField }}"></div>
+  <div class="field"><label>Where to watch</label><input class="input pill" style="padding:9px 15px" name="where" placeholder="Netflix" value="{{ draftWhere }}" onChange="{{ onField }}"></div>
+  <div class="field"><label>Release date</label><input class="input pill" style="padding:9px 15px" name="release" placeholder="2026-11-20, or “Expected Early 2027”" value="{{ draftRelease }}" onChange="{{ onField }}"></div>
+  <div class="field"><label>Overall ranking</label>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:5px">
+      <sc-for list="{{ rankOptions }}" as="r" hint-placeholder-count="5">
+        <button style="{{ r.style }}" onClick="{{ r.pick }}">{{ r.emoji }}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div class="field"><label>Vibe</label><textarea class="input" style="border-radius:18px;padding:12px 15px" name="vibe" placeholder="Steamy, Enemies-to-Lovers — and what it's about" value="{{ draftVibe }}" onChange="{{ onField }}"></textarea></div>
+  <button class="btn btn-primary btn-block pill" style="padding:13px;font-size:15px" onClick="{{ saveMovie }}">Write it to the sheet</button>
+</div>
+</sc-if>
+
+</div>
+
+<sc-if value="{{ calOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:30;background:rgba(56,44,32,.22)" onClick="{{ calClose }}"></div>
+<div class="gl" style="position:absolute;left:16px;right:16px;bottom:96px;z-index:31;padding:18px;border-radius:26px;box-shadow:0 22px 48px rgba(56,44,32,.28);display:flex;flex-direction:column;gap:13px;max-height:60%;overflow:auto">
+  <div style="display:flex;align-items:baseline;gap:9px">
+    <div style="font-family:var(--font-heading);font-weight:600;font-size:30px;line-height:1;letter-spacing:-.03em">{{ calSelDay }}</div>
+    <div style="flex:1;font-family:var(--font-heading);font-size:18px;color:var(--color-neutral-700)">{{ calSelWeekday }}</div>
+    <button class="btn btn-ghost" style="font-size:11.5px;padding:2px 6px" onClick="{{ calClose }}">Close</button>
+  </div>
+  <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-600)">{{ calSelDate }}</div>
+  <sc-for list="{{ calSelBooks }}" as="b" hint-placeholder-count="1">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="{{ b.coverStyle }}">
+        <div style="{{ b.coverTitleStyle }}">{{ b.title }}</div>
+      </div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent)">{{ b.kind }}</div>
+        <div style="font-family:var(--font-heading);font-weight:600;font-size:16px;line-height:1.15">{{ b.title }}</div>
+        <div style="font-size:11px;color:var(--color-neutral-700);font-style:italic">{{ b.author }}</div>
+        <div style="font-size:13px;letter-spacing:.5px">{{ b.rating }}</div>
+      </div>
+    </div>
+  </sc-for>
+  <sc-if value="{{ calSelEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="font-size:13px;font-style:italic;color:var(--color-neutral-700);line-height:1.5">Nothing finished on this day.</div>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ locked }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:34px;background:inherit;backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px)">
+  <div class="gl" style="width:84px;height:84px;border-radius:21px;display:flex;align-items:center;justify-content:center;overflow:hidden">
+    <div style="{{ avatarStyle }}">{{ avatarLetter }}</div>
+  </div>
+  <div style="text-align:center">
+    <div style="font-family:var(--font-heading);font-size:22px;letter-spacing:-.02em">Reading Tracker</div>
+    <div style="font-size:12px;color:var(--color-neutral-700);font-style:italic;margin-top:3px">{{ lockHint }}</div>
+  </div>
+  <div style="display:flex;gap:11px">
+    <sc-for list="{{ lockDots }}" as="d" hint-placeholder-count="4">
+      <div style="{{ d.style }}"></div>
+    </sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,66px);gap:11px;justify-content:center">
+    <sc-for list="{{ lockKeys }}" as="k" hint-placeholder-count="12">
+      <button style="{{ k.style }}" onClick="{{ k.press }}">{{ k.label }}</button>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:20;background:rgba(56,44,32,.14)" onClick="{{ closeMore }}"></div>
+<div class="gl" style="position:absolute;right:16px;bottom:88px;z-index:21;width:236px;padding:7px;border-radius:22px;box-shadow:0 20px 44px rgba(56,44,32,.26);display:flex;flex-direction:column;gap:3px">
+  <button style="{{ menuItemStyle }}" onClick="{{ goHof }}">
+    <div style="flex:1;min-width:0">
+      <div style="font-family:var(--font-heading);font-weight:600;font-size:15px">Hall of Fame</div>
+      <div style="font-size:10.5px;color:var(--color-neutral-700);font-style:italic;margin-top:1px">{{ hofCount }} five-star reads</div>
+    </div>
+    <span style="font-size:14px;color:var(--color-neutral-600)">→</span>
+  </button>
+  <button style="{{ menuItemStyle }}" onClick="{{ goMovies }}">
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:6px">
+        <div style="font-family:var(--font-heading);font-weight:600;font-size:15px">Movie Recs</div>
+        <sc-if value="{{ hasSoon }}" hint-placeholder-val="{{ false }}">
+          <span style="width:6px;height:6px;border-radius:999px;background:var(--color-accent-2);flex:none"></span>
+        </sc-if>
+      </div>
+      <div style="font-size:10.5px;color:var(--color-neutral-700);font-style:italic;margin-top:1px">{{ movieSubtitle }}</div>
+    </div>
+    <span style="font-size:14px;color:var(--color-neutral-600)">→</span>
+  </button>
+</div>
+</sc-if>
+
+<div class="gl" style="flex:none;display:flex;margin:0 14px calc(env(safe-area-inset-bottom) + 12px);border-radius:999px;padding:4px;box-shadow:0 10px 28px rgba(56,44,32,.14)">
+  <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+    <button style="{{ t.style }}" onClick="{{ t.go }}">
+      <span>{{ t.label }}</span>
+      <sc-if value="{{ t.dot }}" hint-placeholder-val="{{ false }}">
+        <span style="width:5px;height:5px;border-radius:999px;background:var(--color-accent-2);flex:none"></span>
+      </sc-if>
+    </button>
+  </sc-for>
+</div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;sheetUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://script.google.com/macros/s/AKfycbyzdm2k3ZrBzlR9Tw-FyyEQShl6C6rt8yEqoihkSauq9DQHl3NzF1iX0lU8hML9Uggo/exec&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Sheet&quot;},&quot;sheetToken&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;rt_byefo8dh2ne7tb78rnxyg4rhro43xr98un3b2enx&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Sheet&quot;},&quot;showFigures&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Home&quot;},&quot;confirmBeforeWrite&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Saving&quot;}}">
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyzdm2k3ZrBzlR9Tw-FyyEQShl6C6rt8yEqoihkSauq9DQHl3NzF1iX0lU8hML9Uggo/exec';
+const SHEET_TOKEN = 'rt_byefo8dh2ne7tb78rnxyg4rhro43xr98un3b2enx';
+const PROMOTE_BUCKET = 'Starting - Move to Tracker';
+const BUCKETS = [PROMOTE_BUCKET, 'Must-Reads', 'Next Up', 'When I Get Around to It', 'Maybe Someday', 'Need More Convincing', 'On Hold', 'In a Reading Slump'];
+
+function today() {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+}
+const ADD_NEW = '＋ Add new…';
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const LIB_SORTS = ['Sheet order', 'Recently finished', 'Title A–Z', 'Author', 'Highest rated'];
+const MOVIE_SORTS = ['Sheet order', 'Title A–Z', 'Highest ranked', 'Spiciest'];
+const RATINGS = [
+  { emoji: '☆', word: 'Did not work for me' },
+  { emoji: '⭐⭐', word: 'A blur' },
+  { emoji: '🌟🌟🌟', word: 'Good' },
+  { emoji: '💫💫💫💫', word: 'Really good' },
+  { emoji: '✨💫🌟⭐🌠', word: 'In love' },
+];
+const VIBES = ['❤️ I Liked', '📌 Must Read', '🏆 Best Book I\'ve Read In a While', '⏰ Stayed Up Way Too Late Reading This', '🥲 I Cried Real Tears (several times-so good)', '👸🏿 A True Love Story', '🙃 Good But Frustrating in Parts', '🤯 Perspective-Shifting', '🌱 I Feel Like I Grew a Little As a Person', '🛠️ Gave Me Actual Tools I\'ll Use', '📚 Informative But Not Very Engaging', '📉 Read Better', '🥸 Can\'t Find The Plot', '😐 Wish I Hadn\'t Read', '😖 I Didn\'t Like It At All', '🤷‍♀️ I Can\'t Remember Anything About This Book - So Yeah', '👀 Read Summary/Notes', '🚪 Couldn\'t Finish', '☺️ One-Shot'];
+const GENRES = ['Romance', 'Dark Romance', 'Mafia Romance', 'Sports Romance', 'Billionaire Romance', 'Urban Romance', 'Fantasy Romance', 'Young Adult', 'Historical Fiction', 'Thriller', 'Mystery', 'One-Shot', 'Inspirational', 'Self-help', 'Non-fiction', 'Personal Finance'];
+const STATUSES = ['Started', 'Finished', 'DNF'];
+const FORMATS = ['Physical Book', 'Kindle', 'Audiobook', 'Kindle + Audio'];
+function serial(n) {
+  const v = parseFloat(n);
+  if (!v) return '';
+  return new Date(Math.round((v - 25569) * 86400000)).toISOString().slice(0, 10);
+}
+const CATALOG = [
+  { title: 'Only For The Week', author: 'Natasha Bishop', pages: 418, genre: 'Romance' },
+  { title: 'One Last Job', author: 'Anise Starre', pages: 310, genre: 'Romance' },
+  { title: 'The Deal', author: 'Elle Kennedy', pages: 371, genre: 'Sports Romance' },
+  { title: 'Twisted Games', author: 'Ana Huang', pages: 448, genre: 'Romance' },
+  { title: 'Fourth Wing', author: 'Rebecca Yarros', pages: 517, genre: 'Romance' },
+  { title: 'The Housemaid', author: 'Freida McFadden', pages: 336, genre: 'Historical Fiction' },
+  { title: 'Butcher & Blackbird', author: 'Brynne Weaver', pages: 351, genre: 'Dark Romance' },
+  { title: 'Pen Pal', author: 'J.T. Geissinger', pages: 273, genre: 'Dark Romance' },
+  { title: 'The Spanish Love Deception', author: 'Elena Armas', pages: 448, genre: 'Romance' },
+  { title: 'Ride with Me', author: 'Simone Soltani', pages: 449, genre: 'Sports Romance' },
+];
+const BOARDS = [
+  ['#e4d8c2', '#3d3527'], ['#d8c7b4', '#3a2f24'], ['#cfd8d3', '#26332e'],
+  ['#e6cfc6', '#3d2a26'], ['#c9d5dd', '#22303a'], ['#ddd2e0', '#332a3a'],
+  ['#e9dfc9', '#3f3a26'], ['#cdd9c8', '#2a331f'],
+];
+function board(title) {
+  let h = 0;
+  for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) % 9973;
+  return BOARDS[h % BOARDS.length];
+}
+const COVER = {};
+function coverUrl(title) { return COVER[title] || null; }
+function cover(title, author, w, h) {
+  const [bg, fg] = board(title);
+  const tiny = w < 46;
+  const url = coverUrl(title);
+  return {
+    coverStyle: {
+      position: 'relative',
+      width: w, height: h, minWidth: w, aspectRatio: h ? undefined : '2/3', flex: 'none',
+      background: bg, color: fg, borderRadius: 6, overflow: 'hidden',
+      backgroundImage: url ? 'url("' + url + '")' : undefined,
+      backgroundSize: 'cover', backgroundPosition: 'center',
+      padding: Math.max(5, Math.round(w * 0.11)), boxSizing: 'border-box',
+      display: 'flex', flexDirection: 'column', gap: 3, justifyContent: 'flex-start',
+      boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 6px rgba(56,44,32,.18)',
+    },
+    coverTitleStyle: (tiny || url) ? { display: 'none' } : {
+      fontFamily: 'var(--font-heading)', fontWeight: 600,
+      fontSize: Math.max(8, Math.round(w * 0.135)), lineHeight: 1.12,
+      letterSpacing: '-.01em', textWrap: 'pretty', overflow: 'hidden',
+    },
+    coverAuthorStyle: (tiny || url) ? { display: 'none' } : {
+      fontSize: Math.max(6.5, Math.round(w * 0.085)), fontStyle: 'italic', opacity: 0.72,
+      marginTop: 'auto', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+    },
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    tab: 'home', flow: null, step: 0, saving: null, q: '', lq: '', pendingRow: null,
+    detail: null, scan: null, scanFound: null,
+    draft: { status: 'Finished', format: 'Kindle', start: today(), finish: today(), bought: false, fav: false },
+    promoting: null,
+    reads: [], lib: [], tbr: [], loaded: false, rowCount: 0,
+    buckets: BUCKETS, bucketPick: null,
+    sync: 'idle', syncAt: null, syncError: null, syncSlow: false, syncStart: 0, syncTick: 0,
+    roll: null,
+    movies: [], hof: { books: [], characters: [] },
+    mq: '', mFilter: 'All', mRank: 'Any', mSpice: 'Any', hofPick: null, moreOpen: false,
+    libStatus: 'All', libGenre: 'All', libRating: 'Any', libFormat: 'Any',
+    libSort: 'Sheet order', mSort: 'Sheet order',
+    calMonth: 3, calYear: 2026, calMode: 'Full', calDay: null,
+    genreNew: false, seriesNew: false, lookingUp: false, lookupHit: null,
+    theme: 'Light', logo: '', pin: '', locked: false, entry: '', lockError: '',
+    pinFlow: null, pinCur: '', pinNext: '', pinConfirm: '', pinError: '',
+    hits: [], searching: false, acHits: [], autoSummary: '',
+    ratingOpen: false, ratingQuery: '', vibeOpen: false, vibeQuery: '',
+    libFiltersOpen: false, movieFiltersOpen: false,
+  };
+
+  /** Ticks while a sync is in flight so the progress bar can move. */
+  startClock() {
+    this.setState({ syncStart: Date.now(), syncTick: 0, syncSlow: false });
+    if (this._clock) clearInterval(this._clock);
+    this._clock = setInterval(() => this.setState(s => ({ syncTick: s.syncTick + 1 })), 350);
+  }
+
+  stopClock() {
+    if (this._clock) { clearInterval(this._clock); this._clock = null; }
+  }
+
+  componentWillUnmount() { this.stopClock(); clearInterval(this._logoTimer); }
+
+  /** Theme, PIN and logo all persist locally — none of it belongs in the sheet. */
+  loadPrefs() {
+    let theme = 'Light', pin = '';
+    try {
+      theme = localStorage.getItem('rt-theme') || 'Light';
+      pin = localStorage.getItem('rt-pin') || '';
+    } catch (ignore) {}
+    this.setState({ theme, pin, locked: !!pin });
+    this.readLogo();
+  }
+
+  /** The image-slot stores its drop under its own id; reuse it as the avatar. */
+  readLogo() {
+    let logo = '';
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.indexOf('rt-app-icon') >= 0) {
+          const v = localStorage.getItem(k);
+          if (v && v.slice(0, 5) === 'data:') { logo = v; break; }
+        }
+      }
+    } catch (ignore) {}
+    if (logo !== this.state.logo) this.setState({ logo });
+  }
+
+  setTheme(theme) {
+    this.setState({ theme });
+    try { localStorage.setItem('rt-theme', theme); } catch (ignore) {}
+  }
+
+  writePin(pin) {
+    this.setState({ pin, pinFlow: null, pinCur: '', pinNext: '', pinConfirm: '', pinError: '' });
+    try {
+      if (pin) localStorage.setItem('rt-pin', pin);
+      else localStorage.removeItem('rt-pin');
+    } catch (ignore) {}
+  }
+
+  pressKey(k) {
+    if (k === 'del') { this.setState(st => ({ entry: st.entry.slice(0, -1), lockError: '' })); return; }
+    this.setState(st => {
+      const entry = (st.entry + k).slice(0, 4);
+      if (entry.length < 4) return { entry, lockError: '' };
+      if (entry === st.pin) return { entry: '', locked: false, lockError: '' };
+      return { entry: '', lockError: 'Wrong PIN' };
+    });
+  }
+
+  componentDidMount() {
+    this.loadPrefs();
+    this.pullSnapshot();
+    this.pull();
+    // The logo lands via drag-and-drop in the slot, so watch for it.
+    this._logoTimer = setInterval(() => this.readLogo(), 1500);
+  }
+
+  cfg() {
+    return {
+      url: String(this.props.sheetUrl ?? SHEET_URL).trim(),
+      token: String(this.props.sheetToken ?? SHEET_TOKEN).trim(),
+    };
+  }
+
+  pull() {
+    const c = this.cfg();
+    if (!c.url) { this.setState({ sync: 'offline' }); return this.pullSnapshot(); }
+    this.setState({ sync: this.state.loaded ? 'refreshing' : 'loading' });
+    this.startClock();
+    // A cold read of the sheet takes about two minutes; a cached one is instant.
+    const ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+    const slow = setTimeout(() => this.setState(s => s.sync === 'loading' || s.sync === 'refreshing'
+      ? { syncSlow: true } : null), 15000);
+    const kill = setTimeout(() => { if (ctl) ctl.abort(); }, 300000);
+    const live = fetch(c.url + '?token=' + encodeURIComponent(c.token) + '&action=read',
+      ctl ? { signal: ctl.signal } : undefined).then(r => r.json());
+    live
+      .then(j => {
+        if (!j.ok) throw new Error(j.error || 'Sheet refused the read');
+        this.ingest(j);
+        this.setState({ sync: 'ok', syncAt: new Date(), syncError: null });
+      })
+      .catch(e => {
+        const aborted = /abort/i.test(String(e && e.name || '') + String(e && e.message || ''));
+        this.setState({
+          sync: 'error',
+          syncError: aborted
+            ? 'The sheet did not answer in five minutes. The sheet script may need redeploying.'
+            : String(e && e.message || e),
+        });
+        if (!this.state.loaded) this.pullSnapshot();
+      })
+      .then(() => { clearTimeout(slow); clearTimeout(kill); this.stopClock(); });
+    return live;
+  }
+
+  post(action, payload) {
+    const c = this.cfg();
+    if (!c.url) return Promise.reject(new Error('No sheet URL set'));
+    return fetch(c.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ token: c.token, action: action }, payload)),
+    }).then(r => r.json()).then(j => {
+      if (!j.ok) throw new Error(j.error || 'The sheet refused the write');
+      return j;
+    });
+  }
+
+  /** Optimistic write: apply locally, post, roll back on failure. */
+  write(action, payload, apply) {
+    const before = { lib: this.state.lib, reads: this.state.reads, tbr: this.state.tbr };
+    if (apply) this.setState(apply);
+    this.setState({ sync: 'saving', syncError: null });
+    this.startClock();
+    return this.post(action, payload).then(j => {
+      this.stopClock();
+      this.setState({ sync: 'ok', syncAt: new Date() });
+      this.pull();
+      return j;
+    }).catch(e => {
+      this.stopClock();
+      this.setState(Object.assign({}, before, { sync: 'error', syncError: String(e && e.message || e) }));
+      throw e;
+    });
+  }
+
+  ingest(j) {
+    const num = v => Math.round(parseFloat(String(v == null ? '' : v).replace(/[^0-9.]/g, '')) || 0);
+    (j.tracker || []).concat(j.tbr || [], j.movies || [], (j.hof && j.hof.books) || [])
+      .forEach(b => { if (b.cover) COVER[b.title] = b.cover; });
+    if (j.movies) this.setState({ movies: j.movies });
+    if (j.hof) this.setState({ hof: Object.assign({ books: [], characters: [], bests: [], months: [] }, j.hof) });
+    const all = (j.tracker || []).map(b => ({
+      id: b.id, row: b.row, title: b.title, author: b.author, genre: b.genre,
+      status: b.status || 'Finished', rating: b.rating || '—',
+      pages: num(b.pages), page: num(b.page), start: b.start || '', finish: b.finish || '',
+      format: b.format || '—', vibe: b.vibe && b.vibe !== '- - -' ? b.vibe : '',
+      fav: b.favName || b.fav || '', series: b.series || '',
+      summary: b.summary || '', notes: b.notes || '',
+    }));
+    this.setState({
+      loaded: true, rowCount: all.length, lib: all,
+      buckets: (j.buckets && j.buckets.length) ? j.buckets : BUCKETS,
+      reads: all.filter(b => b.status === 'Started').map(b => ({
+        id: b.id, title: b.title, author: b.author, format: b.format, page: b.page, pages: b.pages || 320,
+      })),
+      tbr: (j.tbr || []).map(b => ({
+        id: b.id, row: b.row, title: b.title, author: b.author,
+        price: String(b.price || '—').split('\n')[0].trim(),
+        bucket: b.bucket || '', order: num(b.appOrder),
+        pages: num(String(b.info || '').split('|').pop()) || 320,
+        notes: b.notes || '', info: b.info || '',
+      })),
+    });
+  }
+
+  /** Offline fallback: the exported snapshot. */
+  pullSnapshot() {
+    fetch('sheet-data.json').then(r => r.json()).then(j => {
+      if (this.state.sync === 'ok') return;   // live data already landed
+      const norm = b => {
+        if (b.cover && /^http/.test(b.cover)) COVER[b.title] = b.cover.replace(/&amp;/g, '&');
+        return b;
+      };
+      const rows = j.tracker.map(norm);
+      j.tbr.forEach(norm);
+      (j.movies || []).forEach(norm);
+      ((j.hof && j.hof.books) || []).forEach(norm);
+      if (j.movies) this.setState({ movies: j.movies });
+      if (j.hof) this.setState({ hof: Object.assign({ books: [], characters: [], bests: [], months: [] }, j.hof) });
+      const all = rows.map(b => ({
+        title: b.title, author: b.author, genre: b.genre, status: b.status || 'Finished',
+        rating: b.rating || '—', pages: Math.round(parseFloat(b.pages) || 0),
+        page: Math.round(parseFloat(b.page) || 0),
+        start: serial(b.start), finish: serial(b.finish), format: b.format || '—',
+        vibe: b.vibe && b.vibe !== '- - -' ? b.vibe : '', fav: b.fav || '', series: b.series || '',
+        summary: b.summary || '', notes: b.notes || '',
+      }));
+      this.setState({
+        loaded: true, rowCount: rows.length, lib: all,
+        reads: all.filter(b => b.status === 'Started').map(b => ({ title: b.title, author: b.author, format: b.format, page: b.page, pages: b.pages || 320 })),
+        tbr: j.tbr.map(b => ({
+          title: b.title, author: b.author, price: (b.price || '—').split('\n')[0].trim(),
+          bucket: b.bucket || 'Next Up',
+          pages: Math.round(parseFloat((b.info || '').split('|').pop()) || 320),
+          notes: b.notes || '', info: b.info || '',
+        })),
+      });
+    }).catch(() => this.setState({ loaded: true }));
+  }
+
+  set(k, v) { this.setState(s => ({ draft: Object.assign({}, s.draft, { [k]: v }) })); }
+  go(tab) { this.setState({ tab, flow: null, saving: null, step: 0, pendingRow: null, detail: null, scan: null }); }
+  reset() {
+    return { status: 'Finished', format: 'Kindle', start: today(), finish: today(), bought: false, fav: false };
+  }
+
+  /**
+   * Fills cover, summary, page count and genre from the sheet's own
+   * fetchBookDetails(), once there's a title to look up. Never overwrites
+   * something already typed.
+   */
+  /** Open Library search — every book in the world, not just yours. */
+  searchOpenLibrary(q) {
+    const term = String(q || '').trim();
+    if (term.length < 2) { this.setState({ hits: [], searching: false }); return; }
+    this._searchTerm = term;
+    this.setState({ searching: true });
+    this.olSearch(term, 8).then(hits => {
+      if (this._searchTerm !== term) return;              // a newer search won
+      this.setState({ hits, searching: false });
+    });
+  }
+
+  /**
+   * Autocomplete for the by-hand Title/Author fields. Same Open Library
+   * source as the search step, so both agree on what a book is.
+   */
+  suggest(title, author) {
+    const d = this.state.draft;
+    const t = String((title == null ? d.title : title) || '').trim();
+    const a = String((author == null ? d.author : author) || '').trim();
+    const term = [t, a].filter(Boolean).join(' ');
+    if (term.length < 3) { this.setState({ hits: [] }); return; }
+    this._searchTerm = term;
+    this.olSearch(term, 5).then(hits => {
+      if (this._searchTerm !== term) return;
+      // Hide the list once the draft already names the top hit exactly.
+      const exact = hits.length > 0 && hits[0].title.toLowerCase() === t.toLowerCase();
+      this.setState({ hits: exact ? [] : hits, searching: false });
+    });
+  }
+
+  /** One Open Library query, shared by the search step and the autocomplete. */
+  olSearch(term, limit) {
+    const url = 'https://openlibrary.org/search.json?limit=' + limit
+      + '&fields=key,title,author_name,first_publish_year,number_of_pages_median,cover_i&q='
+      + encodeURIComponent(term);
+    return fetch(url).then(r => r.json()).then(j => (j.docs || []).map(doc => {
+      const title = String(doc.title || '').trim();
+      if (doc.cover_i) COVER[title] = 'https://covers.openlibrary.org/b/id/' + doc.cover_i + '-L.jpg';
+      return {
+        title, author: (doc.author_name || [])[0] || '', work: doc.key || '',
+        pages: doc.number_of_pages_median || 0,
+        year: doc.first_publish_year ? String(doc.first_publish_year) : '',
+      };
+    }).filter(h => h.title)).catch(() => []);
+  }
+
+  /** Take a search result into the draft, then go get its description. */
+  pickFound(b) {
+    this.setState(st => ({
+      draft: Object.assign({}, st.draft, {
+        title: b.title, author: b.author,
+        pages: b.pages ? String(b.pages) : st.draft.pages || '',
+        page: b.pages ? String(b.pages) : st.draft.page || '',
+      }),
+    }));
+    this._lookedUp = null;
+    if (!b.work) return;
+    fetch('https://openlibrary.org' + b.work + '.json').then(r => r.json()).then(j => {
+      const raw = j.description;
+      const text = typeof raw === 'string' ? raw : (raw && raw.value) || '';
+      const clean = String(text).replace(/\r/g, '').replace(/\[[^\]]*\]\([^)]*\)/g, '').split('----')[0].trim();
+      if (!clean) return;
+      this.setState(st => st.draft.title === b.title
+        ? { draft: Object.assign({}, st.draft, { summary: st.draft.summary || clean }), autoSummary: clean }
+        : null);
+    }).catch(() => {});
+  }
+
+  lookupBook() {
+    const d = this.state.draft;
+    const title = String(d.title || '').trim();
+    if (!title || title === this._lookedUp) return;
+    const c = this.cfg();
+    if (!c.url) return;
+    this._lookedUp = title;
+    this.setState({ lookingUp: true, lookupHit: null });
+    fetch(c.url + '?token=' + encodeURIComponent(c.token) + '&action=lookup'
+      + '&title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(d.author || ''))
+      .then(r => r.json())
+      .then(j => {
+        if (!j.ok) throw new Error(j.error || 'no match');
+        if (j.cover) COVER[title] = j.cover;
+        this.setState(st => {
+          if (String(st.draft.title || '').trim() !== title) return null;
+          const dd = Object.assign({}, st.draft);
+          let auto = st.autoSummary;
+          if (j.summary && !dd.summary) { dd.summary = j.summary; auto = j.summary; }
+          if (j.pages && !dd.pages) { dd.pages = String(j.pages); dd.page = String(j.pages); }
+          if (j.genre && !dd.genre) dd.genre = j.genre;
+          return { draft: dd, lookingUp: false, lookupHit: j, autoSummary: auto };
+        });
+      })
+      .catch(() => this.setState({ lookingUp: false, lookupHit: null }));
+  }
+  clear() {
+    this._lookedUp = null;
+    return { saving: null, step: 0, pendingRow: null, detail: null, scan: null, scanFound: null, q: '', hits: [], searching: false,
+      acHits: [], autoSummary: '', ratingOpen: false, ratingQuery: '', vibeOpen: false, vibeQuery: '',
+      genreNew: false, seriesNew: false, lookingUp: false, lookupHit: null };
+  }
+
+  bucketNames() {
+    const seen = [];
+    (this.state.buckets || BUCKETS).forEach(b => { if (seen.indexOf(b) < 0) seen.push(b); });
+    this.state.tbr.forEach(b => { const n = b.bucket || 'Unsorted'; if (seen.indexOf(n) < 0) seen.push(n); });
+    return seen;
+  }
+
+  inBucket(name) {
+    return this.state.tbr.filter(b => (b.bucket || 'Unsorted') === name);
+  }
+
+  /** Reorder within one group, then renumber AppOrder across the whole tab. */
+  moveIn(name, i, dir) {
+    const group = this.inBucket(name).slice();
+    const j = i + dir;
+    if (j < 0 || j >= group.length) return;
+    const x = group[i]; group[i] = group[j]; group[j] = x;
+
+    const merged = [];
+    this.bucketNames().forEach(n => {
+      (n === name ? group : this.inBucket(n)).forEach(b => merged.push(b));
+    });
+    this.write('reorderTbr', { order: merged.map(b => b.title) }, { tbr: merged });
+  }
+
+  pickBucket(name) {
+    const b = this.state.bucketPick;
+    if (!b) return;
+    if (name === PROMOTE_BUCKET) {
+      this.setState(Object.assign(this.clear(), { flow: 'promote', promoting: b, bucketPick: null, draft: this.reset() }));
+      return;
+    }
+    this.setState({ flow: null, bucketPick: null });
+    if (name === (b.bucket || '')) return;
+    this.write('setBucket', { id: b.id, title: b.title, bucket: name },
+      st => ({ tbr: st.tbr.map(x => x.title === b.title ? Object.assign({}, x, { bucket: name }) : x) }));
+  }
+
+  runScan(kind) {
+    this.setState({ scan: kind, scanFound: null });
+    setTimeout(() => this.setState(s => {
+      if (s.scan !== kind) return null;
+      const pool = CATALOG.filter(c => !s.lib.some(l => l.title === c.title));
+      return { scanFound: pool[Math.floor(Math.random() * pool.length)] || CATALOG[0] };
+    }), 1600);
+  }
+
+  runSave() {
+    const d = this.state.draft, flow = this.state.flow, target = this.state.promoting;
+    this.setState({ saving: 'write' });
+
+    let p;
+    if (flow === 'tbr') {
+      p = this.write('addTbr', { book: {
+        title: d.title || 'Untitled', author: d.author || '', price: d.price || '',
+        bought: d.bought ? 'TRUE' : 'FALSE', bucket: d.bucket || 'Next Up', notes: d.notes || '',
+      } });
+    } else if (flow === 'update') {
+      p = this.write('updateTracker', {
+        id: target && target.id, title: target && target.title,
+        fields: { page: Number(d.page) || 0 },
+      }, st => ({ reads: st.reads.map(b => b.title === (target && target.title)
+        ? Object.assign({}, b, { page: Math.min(Number(d.page) || b.page, b.pages) }) : b) }));
+    } else if (flow === 'promote') {
+      p = this.write('promoteTbr', { id: target && target.id, title: target && target.title });
+    } else {
+      p = this.write('addTracker', { book: {
+        title: d.title || 'Untitled', author: d.author || '', genre: d.genre || '',
+        status: d.status || 'Started', format: d.format || '', start: d.start || '', finish: d.finish || '',
+        page: d.page || '', pages: d.pages || '', rating: d.rating || '', vibe: d.vibe || '',
+        fav: d.fav ? 'Yes' : '', favName: d.fav ? (d.favName || '') : '', notes: d.notes || '',
+      } });
+    }
+
+    setTimeout(() => this.setState(st => st.saving === 'write' ? { saving: 'script' } : null), 700);
+    p.then(() => this.setState({ saving: 'done' }))
+     .catch(() => this.setState({ saving: 'failed' }));
+  }
+
+  renderVals() {
+    const s = this.state, d = s.draft;
+    const showFigures = this.props.showFigures ?? true;
+    const confirmFirst = this.props.confirmBeforeWrite ?? true;
+    const isScan = !!s.scan && !s.saving;
+    const isFlow = (s.flow === 'tracker' || s.flow === 'tbr') && !isScan;
+    const isPromote = s.flow === 'promote' && !s.saving;
+    const isUpdate = s.flow === 'update' && !s.saving;
+    const saving = s.saving;
+    const tbrFlow = s.flow === 'tbr';
+    const lastStep = tbrFlow ? 1 : 2;
+
+    const chip = on => on ? 'tag-accent' : 'tag-neutral';
+    const rowBase = { display: 'flex', alignItems: 'center', gap: 12, width: '100%', textAlign: 'left', padding: '11px 13px', background: 'rgba(255,255,255,.5)', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,.6)', borderRadius: 18, cursor: 'pointer', fontFamily: 'inherit', color: 'inherit' };
+    const sel = { background: 'rgba(0,136,176,.13)', borderColor: 'var(--color-accent)' };
+
+    const q = s.q.trim().toLowerCase();
+    const results = s.hits.map(b => Object.assign({
+      title: b.title, author: b.author, pages: b.pages, genre: b.year || '',
+      rowStyle: Object.assign({}, rowBase, d.title === b.title ? sel : null),
+      onClick: () => this.pickFound(b),
+    }, cover(b.title, b.author, 42, 62)));
+
+    const lq = s.lq.trim().toLowerCase();
+    const openDetail = b => () => this.setState({ detail: b, flow: null, saving: null });
+    const libGenres = [];
+    s.lib.forEach(b => {
+      const g = String(b.genre || '').trim();
+      if (g && g !== '—' && libGenres.indexOf(g) < 0) libGenres.push(g);
+    });
+    libGenres.sort();
+    const libRows = s.lib.filter(b => {
+      if (s.libStatus !== 'All' && b.status !== s.libStatus) return false;
+      if (s.libGenre !== 'All' && String(b.genre || '').trim() !== s.libGenre) return false;
+      if (s.libRating !== 'Any' && String(b.rating || '').trim() !== s.libRating) return false;
+      if (s.libFormat !== 'Any' && String(b.format || '').trim() !== s.libFormat) return false;
+      return true;
+    }).filter(b => !lq || (b.title + ' ' + b.author + ' ' + b.genre).toLowerCase().includes(lq));
+    const libRank = v => { const i = RATINGS.findIndex(r => r.emoji === String(v).trim()); return i < 0 ? -1 : i; };
+    if (s.libSort === 'Title A–Z') libRows.sort((a, b) => a.title.localeCompare(b.title));
+    if (s.libSort === 'Author') libRows.sort((a, b) => String(a.author).localeCompare(String(b.author)));
+    if (s.libSort === 'Highest rated') libRows.sort((a, b) => libRank(b.rating) - libRank(a.rating));
+    if (s.libSort === 'Recently finished') libRows.sort((a, b) => String(b.finish || '').localeCompare(String(a.finish || '')));
+    const libBits = [];
+    if (s.libStatus !== 'All') libBits.push(s.libStatus);
+    if (s.libRating !== 'Any') libBits.push(s.libRating);
+    if (s.libFormat !== 'Any') libBits.push(s.libFormat);
+    if (s.libGenre !== 'All') libBits.push(s.libGenre);
+    if (s.libSort !== 'Sheet order') libBits.push(s.libSort);
+    const libFiltered = libRows
+      .map(b => Object.assign({ title: b.title, author: b.author, rating: b.rating, open: openDetail(b) }, cover(b.title, b.author, 104)));
+
+    // Release Date holds anything from a real date to "Season 3 - Expected Early 2026",
+    // so only the parseable ones can raise an alert; the rest just read as written.
+    const relDate = v => {
+      const t = String(v == null ? '' : v).trim();
+      if (!t || t === '-') return null;
+      const n = parseFloat(t);
+      if (!isNaN(n) && n > 20000 && n < 80000 && /^[\d.]+$/.test(t)) return new Date(Math.round((n - 25569) * 86400000));
+      const d = new Date(t);
+      return isNaN(d.getTime()) ? null : d;
+    };
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const dated = s.movies.map(m => {
+      const d = relDate(m.release);
+      return { m, d, days: d ? Math.round((d - today) / 86400000) : null };
+    });
+    const upcoming = dated.filter(x => x.days != null && x.days >= 0)
+      .sort((a, b) => a.days - b.days)
+      .map(x => Object.assign({
+        title: x.m.title, where: x.m.where || 'Not set',
+        countdown: x.days === 0 ? 'Out today' : x.days === 1 ? 'Tomorrow'
+          : x.days <= 7 ? 'In ' + x.days + ' days' : x.d.toLocaleDateString([], { month: 'long', day: 'numeric' }),
+      }, cover(x.m.title, x.m.where || '', 44, 66)));
+    const soon = upcoming.filter(u => /today|Tomorrow|In \d+ days/.test(u.countdown));
+
+    const platforms = [];
+    s.movies.forEach(m => {
+      const w = String(m.where || '').trim();
+      if (w && w !== '-' && platforms.indexOf(w) < 0) platforms.push(w);
+    });
+    const spiceLevels = [];
+    s.movies.forEach(m => {
+      const v = String(m.spice || '').trim();
+      if (v && v !== '-' && spiceLevels.indexOf(v) < 0) spiceLevels.push(v);
+    });
+    spiceLevels.sort((a, b) => a.length - b.length);
+    const rankLevels = RATINGS.map(r => r.emoji).filter(e => s.movies.some(m => String(m.ranking || '').trim() === e));
+
+    const mq = s.mq.trim().toLowerCase();
+    const mFiltered = s.movies.filter(m => {
+      if (s.mFilter !== 'All' && String(m.where || '').trim() !== s.mFilter) return false;
+      if (s.mRank !== 'Any' && String(m.ranking || '').trim() !== s.mRank) return false;
+      if (s.mSpice !== 'Any' && String(m.spice || '').trim() !== s.mSpice) return false;
+      if (!mq) return true;
+      return (m.title + ' ' + (m.vibe || '')).toLowerCase().includes(mq);
+    });
+
+    const rankIndex = v => { const i = RATINGS.findIndex(r => r.emoji === String(v).trim()); return i < 0 ? -1 : i; };
+    if (s.mSort === 'Title A–Z') mFiltered.sort((a, b) => a.title.localeCompare(b.title));
+    if (s.mSort === 'Highest ranked') mFiltered.sort((a, b) => rankIndex(b.ranking) - rankIndex(a.ranking));
+    if (s.mSort === 'Spiciest') mFiltered.sort((a, b) => String(b.spice || '').length - String(a.spice || '').length);
+
+    const movBits = [];
+    if (s.mFilter !== 'All') movBits.push(s.mFilter);
+    if (s.mRank !== 'Any') movBits.push(s.mRank);
+    if (s.mSpice !== 'Any') movBits.push(s.mSpice);
+    if (s.mSort !== 'Sheet order') movBits.push(s.mSort);
+
+    // One chip factory for both filter rows — same look, different state key.
+    const chips = (key, opts, current) => opts.map(name => {
+      const on = current === name;
+      return {
+        label: name,
+        style: { padding: '5px 12px', borderRadius: 999, border: on ? '1px solid var(--color-accent)' : '1px solid rgba(56,44,32,.16)', background: on ? 'rgba(0,136,176,.13)' : 'transparent', color: on ? 'var(--color-accent-800)' : 'var(--color-neutral-800)', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 11.5, cursor: 'pointer', whiteSpace: 'nowrap' },
+        pick: () => this.setState({ [key]: name }),
+      };
+    });
+
+    const tabDefs = [['home', 'Library'], ['library', 'Tracker'], ['tbr', 'To Be Read'], ['add', '＋ Add'], ['more', 'More']];
+    const tabs = tabDefs.map(([k, label]) => {
+      const active = k === 'add' ? (isFlow || isScan)
+        : k === 'more' ? (['more', 'hof', 'movies', 'addmovie'].indexOf(s.tab) >= 0 && !s.flow && !s.detail)
+        : (s.tab === k && !s.flow && !s.detail);
+      return {
+        label,
+        dot: k === 'more' && upcoming.length > 0,
+        style: { flex: 1, padding: '11px 3px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, background: active ? 'rgba(0,136,176,.14)' : 'transparent', border: 0, borderRadius: 999, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 11.5, letterSpacing: '.01em', color: active ? 'var(--color-accent-800)' : 'var(--color-neutral-700)' },
+        go: () => k === 'add' ? this.setState(Object.assign(this.clear(), { flow: 'tracker', draft: this.reset() }))
+          : k === 'more' ? this.setState(st => ({ moreOpen: !st.moreOpen }))
+          : this.setState(Object.assign(this.clear(), { tab: k, moreOpen: false, flow: null })),
+      };
+    });
+
+    const stepNames = tbrFlow ? ['Book', 'Details', 'Save'] : ['Book', 'Details', 'Feelings', 'Save'];
+    const cur = saving ? stepNames.length - 1 : Math.min(s.step, stepNames.length - 1);
+    const stepDots = stepNames.map((n, i) => ({ style: { width: i === cur ? 18 : 6, height: 6, borderRadius: 3, background: i <= cur ? 'var(--color-accent)' : 'rgba(56,44,32,.2)' } }));
+
+    const updFlow = s.flow === 'update';
+    const targetSheet = tbrFlow ? 'To Be Read' : 'Tracker';
+    const targetRow = s.pendingRow || (tbrFlow ? 4 + s.tbr.length + 1 : 4 + s.rowCount + 1);
+    const targetNo = String(targetRow - 4);
+    const plan = tbrFlow
+      ? [['No.', targetNo], ['Book Title', d.title || '—'], ['Author', d.author || '—'], ['Price', d.price || '—'], ['Bought', d.bought ? 'TRUE' : 'FALSE'], ['Reading Order', targetNo], ['Info', d.info || '—'], ['Notes', d.notes || '—']]
+      : [['No.', targetNo], ['Book Title', d.title || '—'], ['Author', d.author || '—'], ['Genre', d.genre || '—'], ['Status', d.status], ['Start / Finish', (d.start || '—') + ' → ' + (d.finish || '—')], ['Format', d.format], ['Pages', (d.page || '—') + ' / ' + (d.pages || '—')], ['Rating', d.rating || '—'], ['Feeling', d.vibe || '—'], ['Fav. character', d.fav ? (d.favName || '—') : 'No'], ['Notes/Review', d.notes || '—']];
+
+    const stepList = [
+      { label: updFlow ? 'Updating Current Page on its row' : 'Appending row ' + targetRow + ' to ' + targetSheet },
+      { label: s.flow === 'promote' ? 'Running your startBook script…' : updFlow ? 'Recalculating Reading Progress…' : 'Running your cover-fill script…' },
+      { label: s.flow === 'promote' ? 'Removed from To Be Read · marked as started' : updFlow ? 'Saved · progress updated' : 'Cover filled · formulas recalculated' },
+    ];
+    const order = ['write', 'script', 'done'];
+    const failed = saving === 'failed';
+    const at = failed ? 1 : order.indexOf(saving);
+    const saveSteps = stepList.map((x, i) => {
+      const done = i < at || saving === 'done';
+      const active = i === at && saving !== 'done';
+      return {
+        label: x.label, mark: done ? '●' : active ? (failed ? '✕' : '◐') : '○',
+        markStyle: { fontSize: 12, color: active && failed ? 'var(--color-accent-2)' : (done || active) ? 'var(--color-accent)' : 'rgba(56,44,32,.3)' },
+        textStyle: { fontSize: 13.5, lineHeight: 1.4, color: done || active ? 'var(--color-text)' : 'var(--color-neutral-600)' },
+      };
+    });
+
+    const det = s.detail;
+    const detail = det ? Object.assign({
+      title: det.title, author: det.author, rating: det.rating || '—', status: det.status || 'Reading',
+      genre: det.genre || '—', notes: det.notes || '', hasNotes: !!det.notes,
+      summary: det.summary || '', hasSummary: !!det.summary,
+      onUpdate: () => this.setState({ detail: null, flow: 'update', promoting: { title: det.title, author: det.author, pages: det.pages || 320, format: det.format || 'Kindle' }, saving: null, draft: { page: String(det.pages || 0), format: det.format || 'Kindle' } }),
+    }, cover(det.title, det.author, 108, 162)) : {};
+    const detailRows = det ? [
+      ['Author', det.author], ['Genre', det.genre || '—'], ['Format', det.format || '—'],
+      ['Pages', det.pages ? String(det.pages) : '—'],
+      ['Read', (det.start || '—') + ' → ' + (det.finish || '—')],
+      ['Felt', det.vibe || '—'], ['Fav. character', det.fav || 'None'],
+      ['Series', det.series || '—'],
+    ].map(([k, v]) => ({ k, v })) : [];
+
+    // Progress can't be measured (the sheet reports nothing mid-read), so the bar
+    // eases toward 96% on a curve tuned to the ~100s cold read.
+    const syncEl = s.syncStart ? (Date.now() - s.syncStart) / 1000 : 0;
+    const syncSecs = Math.floor(syncEl);
+    const syncPct = Math.min(96, Math.round(100 * (1 - Math.exp(-syncEl / (s.sync === 'saving' ? 4 : 30)))));
+
+    const rolled = s.roll ? s.tbr.find(b => (b.id && b.id === s.roll) || b.title === s.roll) : null;
+    // Which calendar days got a book finished, from the Tracker's own finish dates.
+    const finishDays = new Set();
+    const byDay = {};
+    s.lib.forEach(b => {
+      const d = b.finish ? new Date(b.finish) : null;
+      if (!d || isNaN(d.getTime())) return;
+      const key = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate();
+      finishDays.add(key);
+      (byDay[key] = byDay[key] || []).push(b);
+    });
+
+    const calYear = s.calYear;
+    const monthStat = (s.hof.months || [])[s.calMonth];
+    const firstDow = new Date(calYear, s.calMonth, 1).getDay();
+    const monthLen = new Date(calYear, s.calMonth + 1, 0).getDate();
+    const prevLen = new Date(calYear, s.calMonth, 0).getDate();
+    const full = s.calMode === 'Full';
+    const cellH = full ? 66 : 40;
+    const calCells = [];
+    for (let i = firstDow - 1; i >= 0; i--) {
+      calCells.push({
+        day: String(prevLen - i), thumbStyle: { display: 'none' },
+        numStyle: { fontSize: 12, color: 'rgba(56,44,32,.28)', fontVariantNumeric: 'tabular-nums' },
+        style: { height: cellH, border: 0, background: 'transparent', padding: 0, cursor: 'default', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 4, font: 'inherit' },
+        onOpen: () => {},
+      });
+    }
+    for (let day = 1; day <= monthLen; day++) {
+      const key = calYear + '-' + s.calMonth + '-' + day;
+      const books = byDay[key] || [];
+      const url = books.length ? coverUrl(books[0].title) : null;
+      const on = books.length > 0;
+      calCells.push({
+        day: String(day),
+        numStyle: { fontSize: 11.5, fontFamily: 'var(--font-heading)', fontWeight: 600, color: on ? 'var(--color-accent-800)' : 'var(--color-neutral-700)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 },
+        thumbStyle: (full && on)
+          ? { flex: 1, width: '100%', minHeight: 0, borderRadius: 3, marginTop: 3, background: url ? 'center/cover url("' + url + '")' : 'var(--color-accent)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.4)' }
+          : (on ? { width: 5, height: 5, borderRadius: 999, background: 'var(--color-accent)', marginTop: 4 } : { display: 'none' }),
+        style: {
+          height: cellH, borderRadius: 7, cursor: 'pointer', font: 'inherit', padding: 4,
+          border: s.calDay === day ? '1px solid var(--color-accent)' : '1px solid rgba(56,44,32,.10)',
+          background: on ? 'rgba(255,255,255,.62)' : 'rgba(255,255,255,.28)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0, overflow: 'hidden',
+        },
+        onOpen: () => this.setState(st => ({ calDay: st.calDay === day ? null : day })),
+      });
+    }
+    const selBooks = s.calDay ? (byDay[calYear + '-' + s.calMonth + '-' + s.calDay] || []) : [];
+
+    // The sheet's monthly figures cover one year only; outside it, count the grid itself.
+    const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : 's');
+    let calStat;
+    if (monthStat && calYear === (s.hof.year || calYear)) {
+      calStat = plural(monthStat.books, 'book') + ' finished · ' + plural(monthStat.days, 'day') + ' read';
+    } else {
+      let books = 0, days = 0;
+      for (let day = 1; day <= monthLen; day++) {
+        const n = (byDay[calYear + '-' + s.calMonth + '-' + day] || []).length;
+        if (n) { books += n; days++; }
+      }
+      calStat = plural(books, 'book') + ' finished · ' + plural(days, 'day') + ' read';
+    }
+    // Dropdown vocabularies: the sheet's own values first, then anything typed.
+    const genreList = [''].concat(GENRES);
+    s.lib.forEach(b => { const g = String(b.genre || '').trim(); if (g && g !== '—' && genreList.indexOf(g) < 0) genreList.push(g); });
+    if (d.genre && genreList.indexOf(d.genre) < 0) genreList.push(d.genre);
+    genreList.push(ADD_NEW);
+
+    const seriesList = [''];
+    s.lib.forEach(b => { const v = String(b.series || '').trim(); if (v && v !== '—' && seriesList.indexOf(v) < 0) seriesList.push(v); });
+    seriesList.sort((a, b2) => a.localeCompare(b2));
+    if (d.series && seriesList.indexOf(d.series) < 0) seriesList.push(d.series);
+    seriesList.push(ADD_NEW);
+
+    const ratingWord = (RATINGS.find(r => r.emoji === d.rating) || {}).word;
+    const rq = s.ratingQuery.trim().toLowerCase();
+    const ratingMatches = RATINGS.filter(r => !rq || r.word.toLowerCase().includes(rq) || r.emoji.includes(rq));
+    const vq = s.vibeQuery.trim().toLowerCase();
+    const vibeMatches = VIBES.filter(v => !vq || v.toLowerCase().includes(vq));
+    const pickerBtn = filled => ({
+      display: 'flex', alignItems: 'center', gap: 9, width: '100%', marginTop: 4,
+      padding: '10px 15px', borderRadius: 999, cursor: 'pointer', font: 'inherit', fontSize: 13.5,
+      border: '1px solid rgba(56,44,32,.18)', background: 'rgba(255,255,255,.55)',
+      color: filled ? 'var(--color-text)' : 'var(--color-neutral-600)',
+    });
+
+    const hofNote = s.hofPick ? s.hof.books.find(b => b.title === s.hofPick) : null;
+    const sf = s.scanFound;
+    const scanBook = sf ? Object.assign({ title: sf.title, author: sf.author, pages: sf.pages }, cover(sf.title, sf.author, 54, 80)) : {};
+
+    return {
+      isHome: s.tab === 'home' && !s.flow && !s.detail,
+      isLibrary: s.tab === 'library' && !s.flow && !s.detail,
+      isTbr: s.tab === 'tbr' && !s.flow && !s.detail,
+      themeClass: s.theme === 'Dark' ? 'rt-dark' : '',
+      isSettings: s.tab === 'settings' && !s.flow && !s.detail,
+      goSettings: () => this.setState(Object.assign(this.clear(), { tab: 'settings', moreOpen: false, flow: null, promoting: null })),
+      avatarLetter: s.logo ? '' : 'C',
+      avatarStyle: {
+        width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 15,
+        background: s.logo ? 'center/cover url("' + s.logo + '")' : 'transparent',
+      },
+      themeModes: ['Light', 'Dark'].map(label => {
+        const on = s.theme === label;
+        return {
+          label,
+          style: { flex: 1, padding: '10px 4px', border: 0, borderRadius: 999, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13.5, background: on ? 'rgba(0,136,176,.16)' : 'transparent', color: on ? 'var(--color-accent-800)' : 'var(--color-neutral-700)' },
+          pick: () => this.setTheme(label),
+        };
+      }),
+      pinSet: !!s.pin,
+      pinIdle: !s.pinFlow,
+      pinEditing: !!s.pinFlow,
+      pinHasCurrent: !!s.pin,
+      pinNewLabel: s.pin ? 'New PIN' : 'PIN',
+      pinCta: s.pin ? 'Change PIN' : 'Set a PIN',
+      pinStatus: s.pin ? 'A 4-digit PIN is required to open the app.' : 'No PIN. The app opens straight to your library.',
+      pinCur: s.pinCur, pinNext: s.pinNext, pinConfirm: s.pinConfirm, pinError: s.pinError,
+      startPin: () => this.setState({ pinFlow: 'edit', pinCur: '', pinNext: '', pinConfirm: '', pinError: '' }),
+      cancelPin: () => this.setState({ pinFlow: null, pinError: '' }),
+      onPinField: e => {
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 4);
+        const key = e.target.name === 'cur' ? 'pinCur' : e.target.name === 'next' ? 'pinNext' : 'pinConfirm';
+        this.setState({ [key]: digits, pinError: '' });
+      },
+      savePin: () => {
+        if (s.pin && s.pinCur !== s.pin) { this.setState({ pinError: 'That is not your current PIN.' }); return; }
+        if (s.pinNext.length !== 4) { this.setState({ pinError: 'The PIN has to be 4 digits.' }); return; }
+        if (s.pinNext !== s.pinConfirm) { this.setState({ pinError: 'The two PINs do not match.' }); return; }
+        this.writePin(s.pinNext);
+      },
+      removePin: () => { if (window.confirm('Turn off the PIN? Anyone can then open the app.')) this.writePin(''); },
+      lockNow: () => this.setState({ locked: true, entry: '' }),
+      locked: s.locked,
+      lockHint: s.lockError || 'Enter your PIN',
+      lockDots: [0, 1, 2, 3].map(i => ({
+        style: {
+          width: 11, height: 11, borderRadius: 999,
+          background: i < s.entry.length ? 'var(--color-accent)' : 'transparent',
+          border: '1px solid ' + (s.lockError ? 'var(--color-accent-2)' : 'rgba(0,136,176,.45)'),
+        },
+      })),
+      lockKeys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map(k => ({
+        label: k === 'del' ? '⌫' : k,
+        style: {
+          height: 58, borderRadius: 999, cursor: k ? 'pointer' : 'default',
+          border: k ? '1px solid rgba(255,255,255,.5)' : '0',
+          background: k ? 'rgba(255,255,255,.42)' : 'transparent',
+          fontFamily: 'var(--font-heading)', fontSize: k === 'del' ? 17 : 21,
+          color: 'var(--color-text)', visibility: k ? 'visible' : 'hidden',
+        },
+        press: () => { if (k) this.pressKey(k); },
+      })),
+      moreOpen: s.moreOpen,
+      closeMore: () => this.setState({ moreOpen: false }),
+      menuItemStyle: { display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 16, border: 0, background: 'transparent', cursor: 'pointer', textAlign: 'left', font: 'inherit' },
+      isHof: s.tab === 'hof' && !s.flow && !s.detail,
+      isMovies: s.tab === 'movies' && !s.flow && !s.detail,
+      isAddMovie: s.tab === 'addmovie' && !s.flow && !s.detail,
+      goHof: () => this.setState(Object.assign(this.clear(), { tab: 'hof', moreOpen: false, flow: null, promoting: null })),
+      goMovies: () => this.setState(Object.assign(this.clear(), { tab: 'movies', moreOpen: false, flow: null, promoting: null })),
+      goAddMovie: () => this.setState(Object.assign(this.clear(), { tab: 'addmovie', moreOpen: false, flow: null, promoting: null, draft: {} })),
+      hofCount: s.hof.books.length,
+      hofCharCount: s.hof.characters.length,
+      hasSoon: soon.length > 0,
+      movieSubtitle: soon.length
+        ? soon.length + (soon.length === 1 ? ' release this week' : ' releases this week')
+        : s.movies.length + ' films and shows',
+      hofBooks: s.hof.books.map(b => {
+        const c = cover(b.title, b.author || '', 100, 0);
+        c.coverStyle = Object.assign({}, c.coverStyle, { width: '100%', minWidth: 0, height: 'auto', aspectRatio: '2/3' });
+        return Object.assign({
+          title: b.title, author: b.author || '',
+          wrapStyle: { display: 'flex', flexDirection: 'column', gap: 5, padding: 0, border: 0, background: 'transparent', cursor: 'pointer', textAlign: 'left', font: 'inherit' },
+          onOpen: () => this.setState(st => ({ hofPick: st.hofPick === b.title ? null : b.title })),
+        }, c);
+      }),
+      hofChars: s.hof.characters.map(c => ({
+        name: c.name, book: c.book || '', rank: c.rank || '',
+        marks: [c.spice, c.swoon].filter(v => v && v !== '-').join('  '),
+        photoStyle: {
+          width: 62, height: 82, flex: 'none', borderRadius: 8, overflow: 'hidden',
+          background: c.image ? 'center/cover url("' + c.image + '")' : 'rgba(56,44,32,.12)',
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.35), 0 2px 6px rgba(56,44,32,.18)',
+        },
+      })),
+      hofBests: (s.hof.bests || []).map(b => ({ label: b.label, value: b.value, sub: b.sub || '', note: b.note || '' })),
+      hofYear: s.hof.year || new Date().getFullYear(),
+      hofYearBooks: (s.hof.months || []).reduce((n, m) => n + (m.books || 0), 0),
+      calNum: String(s.calMonth + 1).padStart(2, '0'),
+      calYear: String(calYear),
+      calMonthName: MONTH_NAMES[s.calMonth],
+      calStat: calStat,
+      calPrev: () => this.setState(st => st.calMonth === 0 ? { calMonth: 11, calYear: st.calYear - 1, calDay: null } : { calMonth: st.calMonth - 1, calDay: null }),
+      calNext: () => this.setState(st => st.calMonth === 11 ? { calMonth: 0, calYear: st.calYear + 1, calDay: null } : { calMonth: st.calMonth + 1, calDay: null }),
+      calModes: ['Compact', 'Full'].map(label => {
+        const on = s.calMode === label;
+        return {
+          label,
+          style: { flex: 1, padding: '9px 4px', border: 0, borderRadius: 999, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13, background: on ? 'rgba(0,136,176,.14)' : 'transparent', color: on ? 'var(--color-accent-800)' : 'var(--color-neutral-700)' },
+          pick: () => this.setState({ calMode: label }),
+        };
+      }),
+      calDows: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(label => ({ label })),
+      calCells: calCells,
+      calOpen: !!s.calDay,
+      calClose: () => this.setState({ calDay: null }),
+      calSelDay: s.calDay || '',
+      calSelWeekday: s.calDay ? DAY_NAMES[new Date(calYear, s.calMonth, s.calDay).getDay()] : '',
+      calSelDate: s.calDay ? s.calDay + ' ' + MONTH_NAMES[s.calMonth].slice(0, 3) + ' ' + calYear : '',
+      calSelBooks: selBooks.map(b => Object.assign({
+        title: b.title, author: b.author || '', rating: b.rating && b.rating !== '—' ? b.rating : '',
+        kind: 'Finished',
+      }, cover(b.title, b.author || '', 46, 69))),
+      calSelEmpty: !!s.calDay && selBooks.length === 0,
+      hofMonths: (s.hof.months || []).map((m, mi) => {
+        const year = s.hof.year || new Date().getFullYear();
+        const first = new Date(year, mi, 1).getDay();
+        const len = new Date(year, mi + 1, 0).getDate();
+        const cells = [];
+        for (let i = 0; i < first; i++) cells.push({ label: '', style: { height: 11 } });
+        for (let d = 1; d <= len; d++) {
+          const on = finishDays.has(year + '-' + mi + '-' + d);
+          cells.push({
+            label: String(d),
+            style: {
+              height: 11, borderRadius: 2, fontSize: 6.5, lineHeight: '11px', textAlign: 'center',
+              fontVariantNumeric: 'tabular-nums',
+              background: on ? 'var(--color-accent)' : 'rgba(56,44,32,.07)',
+              color: on ? '#fff' : 'var(--color-neutral-700)',
+            },
+          });
+        }
+        return {
+          short: (m.name || '').slice(0, 3),
+          stat: m.books + (m.books === 1 ? ' book' : ' books'),
+          cells,
+        };
+      }),
+      hofPick: !!hofNote,
+      hofNote: hofNote || {},
+      closeHof: () => this.setState({ hofPick: null }),
+      hasUpcoming: upcoming.length > 0,
+      upcoming,
+      mq: s.mq,
+      onSearchMovies: e => this.setState({ mq: e.target.value }),
+      movieCount: s.movies.length,
+      movieShown: mFiltered.length,
+      noMovies: s.movies.length > 0 && mFiltered.length === 0,
+      libFiltersOpen: s.libFiltersOpen,
+      movieFiltersOpen: s.movieFiltersOpen,
+      toggleLibFilters: () => this.setState(st => ({ libFiltersOpen: !st.libFiltersOpen })),
+      toggleMovieFilters: () => this.setState(st => ({ movieFiltersOpen: !st.movieFiltersOpen })),
+      libFilterSummary: libBits.length ? libBits.join(' · ') : 'All books, sheet order',
+      movieFilterSummary: movBits.length ? movBits.join(' · ') : 'Everything, sheet order',
+      libSorts: chips('libSort', LIB_SORTS, s.libSort),
+      movieSorts: chips('mSort', MOVIE_SORTS, s.mSort),
+      movieFilters: chips('mFilter', ['All'].concat(platforms), s.mFilter),
+      movieRankFilters: chips('mRank', ['Any'].concat(rankLevels), s.mRank),
+      movieSpiceFilters: chips('mSpice', ['Any'].concat(spiceLevels), s.mSpice),
+      moviesFiltered: s.mFilter !== 'All' || s.mRank !== 'Any' || s.mSpice !== 'Any',
+      clearMovieFilters: () => this.setState({ mFilter: 'All', mRank: 'Any', mSpice: 'Any', mq: '' }),
+      libStatusFilters: chips('libStatus', ['All'].concat(STATUSES), s.libStatus),
+      libGenreFilters: chips('libGenre', ['All'].concat(libGenres), s.libGenre),
+      libRatingFilters: chips('libRating', ['Any'].concat(RATINGS.map(r => r.emoji).reverse()), s.libRating),
+      libFormatFilters: chips('libFormat', ['Any'].concat(FORMATS), s.libFormat),
+      libFiltering: s.libStatus !== 'All' || s.libGenre !== 'All' || s.libRating !== 'Any' || s.libFormat !== 'Any',
+      clearLibFilters: () => this.setState({ libStatus: 'All', libGenre: 'All', libRating: 'Any', libFormat: 'Any', lq: '' }),
+      movieList: mFiltered.map(m => Object.assign({
+        title: m.title,
+        meta: [m.where && m.where !== '-' ? m.where : null,
+               m.spice && m.spice !== '-' ? 'Spice ' + m.spice : null,
+               m.swoon && m.swoon !== '-' ? m.swoon : null,
+               m.release && m.release !== '-' ? m.release : null].filter(Boolean).join(' · '),
+        ranking: m.ranking && m.ranking !== '-' ? m.ranking : '',
+        vibe: m.vibe || '',
+      }, cover(m.title, m.where || '', 52, 78))),
+      draftWhere: d.where || '', draftRelease: d.release || '', draftVibe: d.vibe || '',
+      rankOptions: RATINGS.map(r => ({
+        emoji: r.emoji,
+        style: { padding: '7px 12px', borderRadius: 999, border: d.ranking === r.emoji ? '1px solid var(--color-accent)' : '1px solid rgba(56,44,32,.18)', background: d.ranking === r.emoji ? 'rgba(0,136,176,.13)' : 'transparent', fontSize: 14, cursor: 'pointer' },
+        pick: () => this.set('ranking', r.emoji),
+      })),
+      saveMovie: () => {
+        if (!d.title) return;
+        this.write('addMovie', { movie: { title: d.title, where: d.where || '', release: d.release || '', vibe: d.vibe || '', ranking: d.ranking || '' } },
+          st => ({ movies: st.movies.concat([{ title: d.title, where: d.where || '', release: d.release || '', vibe: d.vibe || '', ranking: d.ranking || '', spice: '', swoon: '' }]) })
+        ).then(() => this.setState({ tab: 'movies', draft: this.reset() }));
+      },
+      isDetail: !!s.detail,
+      isScan,
+      isFlow: isFlow || (!!saving && !!s.flow),
+      isPromote, isUpdate, showFigures,
+      syncedAgo: (s.syncAt ? s.syncAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'not yet'),
+      tabs, stepDots,
+      stepLabel: stepNames[cur],
+      flowTitle: tbrFlow ? 'Add to To Be Read' : 'Log a book',
+      scanTitle: s.scan === 'cover' ? 'Photograph the cover' : 'Scan the barcode',
+      scanHint: sf ? 'Matched' : s.scan === 'cover' ? 'Hold the cover in frame…' : 'Line up the barcode…',
+      scanFound: !!sf, scanBook,
+      atFind: isFlow && s.step === 0 && !saving,
+      atBasics: isFlow && !tbrFlow && s.step === 1 && !saving,
+      atFeelings: isFlow && !tbrFlow && s.step === 2 && !saving,
+      atTbrDetails: isFlow && tbrFlow && s.step === 1 && !saving,
+      atReview: isFlow && s.step > lastStep && !saving,
+      isSaving: !!saving,
+      isDone: saving === 'done',
+      doneHead: s.flow === 'promote' ? 'Started.' : tbrFlow ? 'On the list.' : updFlow ? 'Saved.' : 'Logged.',
+      doneBody: s.flow === 'promote'
+        ? (s.promoting ? s.promoting.title : 'It') + ' is in the Tracker as Reading. Your To Be Read numbering closed the gap.'
+        : updFlow
+          ? 'Current Page is now ' + (d.page || '—') + '. Only that one cell changed.'
+          : (d.title || 'The book') + ' is in ' + targetSheet + ' at row ' + targetRow + '. Nothing else in the sheet changed.',
+      reads: s.reads.map(b => Object.assign({
+        title: b.title, author: b.author, format: b.format, page: b.page, pages: b.pages,
+        pct: Math.round(b.page / b.pages * 100),
+        barStyle: { position: 'absolute', top: 0, bottom: 0, left: 0, borderRadius: 2, width: Math.round(b.page / b.pages * 100) + '%', background: 'var(--color-accent)' },
+        onResume: () => this.setState({ flow: 'update', promoting: b, saving: null, detail: null, draft: { page: String(b.page), format: b.format } }),
+      }, cover(b.title, b.author, 62, 92))),
+      figures: [
+        { n: String(s.lib.filter(b => b.status === 'Finished' && (b.finish || '').slice(0, 4) === '2026').length), label: 'Finished this year' },
+        { n: String(s.lib.filter(b => (b.finish || '').slice(0, 7) === '2026-08').length), label: 'Finished in August' },
+        { n: String(s.tbr.length), label: 'On To Be Read' },
+      ],
+      shelf: s.lib.filter(b => b.status !== 'Started').slice(-6).reverse().map(b => Object.assign({ title: b.title, author: b.author, rating: b.rating, open: openDetail(b) }, cover(b.title, b.author, 104))),
+      nextUp: s.tbr.slice(0, 2).map(b => Object.assign({
+        title: b.title, author: b.author,
+        onStart: () => this.setState(Object.assign(this.clear(), { flow: 'promote', promoting: b, draft: this.reset() })),
+      }, cover(b.title, b.author, 36, 54))),
+      libFiltered, libShown: libFiltered.length, libCount: s.lib.length, lastRow: 4 + s.rowCount,
+      notLoaded: !s.loaded,
+      detail, detailRows,
+      closeDetail: () => this.setState({ detail: null }),
+      lq: s.lq, q: s.q,
+      goLibrary: () => this.go('library'),
+      goTbr: () => this.go('tbr'),
+      onSearch: e => {
+        const v = e.target.value;
+        this.setState({ q: v });
+        clearTimeout(this._searchTimer);
+        this._searchTimer = setTimeout(() => this.searchOpenLibrary(v), 350);
+      },
+      searching: s.searching,
+      onSearchLib: e => this.setState({ lq: e.target.value }),
+      hasResults: results.length > 0,
+      noResults: q.length > 1 && results.length === 0 && !s.searching,
+      results,
+      pickedBook: !!d.title,
+      openScan: () => this.runScan('barcode'),
+      openCoverScan: () => this.runScan('cover'),
+      rescan: () => this.runScan(s.scan),
+      backToFind: () => this.setState({ scan: null, scanFound: null }),
+      acceptScan: () => this.setState(st => ({
+        scan: null, scanFound: null, step: 1,
+        draft: Object.assign({}, st.draft, { title: sf.title, author: sf.author, pages: String(sf.pages), genre: sf.genre, page: String(sf.pages) }),
+      })),
+      tbrCount: s.tbr.length,
+      hasRoll: !!rolled,
+      rollLabel: rolled ? 'Pick a different one' : 'Pick one for me',
+      rollAgain: () => this.setState(st => {
+        const pool = st.tbr.filter(b => (b.id || b.title) !== st.roll);
+        const pick = (pool.length ? pool : st.tbr)[Math.floor(Math.random() * (pool.length || st.tbr.length))];
+        return pick ? { roll: pick.id || pick.title } : null;
+      }),
+      clearRoll: () => this.setState({ roll: null }),
+      roll: rolled ? Object.assign({
+        title: rolled.title, author: rolled.author, bucket: rolled.bucket || 'Unsorted',
+        onStart: () => this.setState(Object.assign(this.clear(), { flow: 'promote', promoting: rolled, draft: this.reset(), roll: null })),
+      }, cover(rolled.title, rolled.author, 62, 92)) : {},
+      tbrGroups: this.bucketNames().map(name => {
+        const books = this.inBucket(name);
+        return {
+          name, count: books.length === 1 ? '1 book' : books.length + ' books',
+          books: books.map((b, i) => Object.assign({
+            title: b.title, author: b.author, price: b.price,
+            up: () => this.moveIn(name, i, -1),
+            down: () => this.moveIn(name, i, 1),
+            onMove: () => this.setState(Object.assign(this.clear(), { flow: 'bucket', bucketPick: b })),
+            onStart: () => this.setState(Object.assign(this.clear(), { flow: 'promote', promoting: b, draft: this.reset() })),
+          }, cover(b.title, b.author, 34, 50))),
+        };
+      }).filter(g => g.books.length),
+      isBucketPick: !!s.bucketPick,
+      bucketTitle: s.bucketPick ? s.bucketPick.title : '',
+      cancelBucket: () => this.setState({ flow: null, bucketPick: null }),
+      bucketOptions: this.bucketNames().map(name => ({
+        name,
+        hint: name === PROMOTE_BUCKET ? 'runs your move script'
+          : (s.bucketPick && name === (s.bucketPick.bucket || '')) ? 'current' : '',
+        rowStyle: Object.assign({}, rowBase, (s.bucketPick && name === (s.bucketPick.bucket || '')) ? sel : null),
+        pick: () => this.pickBucket(name),
+      })),
+      syncBusy: s.sync === 'loading' || s.sync === 'refreshing' || s.sync === 'saving',
+      syncElapsed: syncSecs >= 1 ? syncSecs + 's' : '',
+      syncBarStyle: {
+        height: '100%', width: syncPct + '%', background: 'var(--color-accent)',
+        borderRadius: 2, transition: 'width .35s linear',
+      },
+      syncFailed: s.sync === 'error' || s.sync === 'offline',
+      syncText: (s.syncSlow && (s.sync === 'loading' || s.sync === 'refreshing'))
+        ? 'The sheet is rebuilding its data. This can take two minutes.'
+        : s.sync === 'loading' ? 'Reading the sheet…'
+        : s.sync === 'refreshing' ? 'Refreshing from the sheet…'
+        : s.sync === 'saving' ? 'Writing to the sheet…'
+        : s.sync === 'offline' ? 'No sheet URL set — showing the last export.'
+        : (s.syncError || 'Could not reach the sheet.'),
+      refresh: () => this.pull(),
+      isFailed: saving === 'failed',
+      genres: GENRES.map(g => ({ label: g, cls: chip(d.genre === g), pick: () => this.set('genre', g) })),
+      statuses: STATUSES.map(x => ({ label: x, on: d.status === x, pick: () => this.set('status', x) })),
+      formats: FORMATS.map(x => ({ label: x, on: d.format === x, pick: () => this.set('format', x) })),
+      ratings: RATINGS.map(r => ({
+        emoji: r.emoji, word: r.word,
+        rowStyle: Object.assign({}, rowBase, d.rating === r.emoji ? sel : null),
+        onClick: () => this.set('rating', r.emoji),
+      })),
+      ratingLabel: d.rating ? d.rating + '   ' + (ratingWord || '') : 'Pick a rating',
+      ratingCaret: s.ratingOpen ? '▲' : '▼',
+      ratingOpen: s.ratingOpen,
+      ratingQuery: s.ratingQuery,
+      ratingBtnStyle: pickerBtn(!!d.rating),
+      toggleRating: () => this.setState(st => ({ ratingOpen: !st.ratingOpen, vibeOpen: false })),
+      onRatingSearch: e => this.setState({ ratingQuery: e.target.value }),
+      ratingEmpty: ratingMatches.length === 0,
+      ratingOptions: ratingMatches.map(r => ({
+        emoji: r.emoji, word: r.word,
+        style: Object.assign({}, rowBase, d.rating === r.emoji ? sel : null),
+        pick: () => { this.set('rating', r.emoji); this.setState({ ratingOpen: false, ratingQuery: '' }); },
+      })),
+      vibeLabel: d.vibe || 'Pick a feeling',
+      vibeCaret: s.vibeOpen ? '▲' : '▼',
+      vibeOpen: s.vibeOpen,
+      vibeQuery: s.vibeQuery,
+      vibeBtnStyle: pickerBtn(!!d.vibe),
+      toggleVibe: () => this.setState(st => ({ vibeOpen: !st.vibeOpen, ratingOpen: false })),
+      onVibeSearch: e => this.setState({ vibeQuery: e.target.value }),
+      vibeEmpty: vibeMatches.length === 0,
+      useVibeQuery: () => { this.set('vibe', s.vibeQuery.trim()); this.setState({ vibeOpen: false, vibeQuery: '' }); },
+      vibeOptions: vibeMatches.map(v => ({
+        label: v,
+        style: {
+          textAlign: 'left', padding: '8px 11px', borderRadius: 12, cursor: 'pointer', font: 'inherit',
+          fontSize: 12.5, lineHeight: 1.35,
+          border: d.vibe === v ? '1px solid var(--color-accent)' : '1px solid transparent',
+          background: d.vibe === v ? 'rgba(0,136,176,.12)' : 'transparent',
+          color: 'var(--color-neutral-800)',
+        },
+        pick: () => { this.set('vibe', v); this.setState({ vibeOpen: false, vibeQuery: '' }); },
+      })),
+      draftSummary: d.summary || '',
+      summaryFilled: !!d.summary && d.summary === s.autoSummary,
+      hasSuggestions: s.hits.length > 0,
+      suggestions: s.hits.map(b => Object.assign({
+        title: b.title,
+        line: [b.author, b.year, b.pages ? b.pages + ' pp' : ''].filter(Boolean).join(' · '),
+        rowStyle: Object.assign({}, rowBase, { padding: '7px 8px' }, d.title === b.title ? sel : null),
+        onClick: () => { this.pickFound(b); this.setState({ hits: [] }); },
+      }, cover(b.title, b.author, 34, 50))),
+      favOn: !!d.fav, boughtOn: !!d.bought,
+      toggleFav: () => this.set('fav', !d.fav),
+      toggleBought: () => this.set('bought', !d.bought),
+      draftTitle: d.title || '', draftAuthor: d.author || '', draftStart: d.start || '', draftFinish: d.finish || '',
+      draftPage: d.page || '', draftPages: d.pages || '', draftSeries: d.series || '', draftNotes: d.notes || '',
+      draftFav: d.favName || '', draftPrice: d.price || '', draftInfo: d.info || '',
+      pageBumps: [10, 25, 50].map(n => ({ label: '+' + n, add: () => this.set('page', String((Number(d.page) || 0) + n)) }))
+        .concat([{ label: 'Finished the book', add: () => this.set('page', String(s.promoting ? s.promoting.pages : d.page)) }]),
+      markFinished: () => this.setState(st => ({ flow: 'tracker', step: 1, saving: null, pendingRow: null, draft: Object.assign({}, this.reset(), { title: st.promoting.title, author: st.promoting.author, pages: String(st.promoting.pages), page: String(st.promoting.pages), format: st.promoting.format }) })),
+      nextOrder: s.tbr.length + 1,
+      reviewCta: confirmFirst ? 'Next — review the row' : 'Write it to the sheet',
+      targetSheet, targetRow,
+      writePlan: plan.map(([k, v]) => ({ k, v })),
+      untouched: tbrFlow ? 'Cover, and every existing row' : 'S, T, U (Days to Read, Reading Progress, Review Ratings)',
+      saveSteps,
+      promoteTitle: s.promoting ? s.promoting.title : '',
+      startTracker: () => this.setState(Object.assign(this.clear(), { flow: 'tracker', draft: this.reset() })),
+      startTbr: () => this.setState(Object.assign(this.clear(), { flow: 'tbr', draft: this.reset() })),
+      onField: e => {
+        const name = e.target.name, value = e.target.value;
+        this.set(name, value);
+        if (name === 'title' || name === 'author') {
+          // Pass the typed values straight through — no waiting on state.
+          const t = name === 'title' ? value : d.title;
+          const a = name === 'author' ? value : d.author;
+          clearTimeout(this._lookupTimer);
+          this._lookupTimer = setTimeout(() => this.lookupBook(), 700);
+          clearTimeout(this._acTimer);
+          this._acTimer = setTimeout(() => this.suggest(t, a), 400);
+        }
+      },
+      onGenreSelect: e => {
+        const v = e.target.value;
+        if (v === ADD_NEW) { this.setState({ genreNew: true }); this.set('genre', ''); }
+        else { this.setState({ genreNew: false }); this.set('genre', v); }
+      },
+      onSeriesSelect: e => {
+        const v = e.target.value;
+        if (v === ADD_NEW) { this.setState({ seriesNew: true }); this.set('series', ''); }
+        else { this.setState({ seriesNew: false }); this.set('series', v); }
+      },
+      genreNew: s.genreNew,
+      seriesNew: s.seriesNew,
+      draftGenre: d.genre || '',
+      genreOptions: genreList.map(g => ({ value: g, label: g || 'Pick a genre', on: (d.genre || '') === g })),
+      seriesOptions: seriesList.map(o => ({ value: o, label: o || 'None', on: (d.series || '') === o })),
+      lookupNote: s.lookingUp ? 'Looking the book up in your sheet…'
+        : s.lookupHit ? 'Cover and summary filled in from your sheet\u2019s lookup.' : '',
+      lookupCoverStyle: {
+        width: 34, height: 50, flex: 'none', borderRadius: 4, overflow: 'hidden',
+        background: (s.lookupHit && s.lookupHit.cover) ? 'center/cover url("' + s.lookupHit.cover + '")' : 'rgba(0,136,176,.18)',
+      },
+      next: () => {
+        if (s.step === 0) this.lookupBook();
+        if (isFlow && s.step >= lastStep) {
+          const row = tbrFlow ? 4 + s.tbr.length + 1 : 4 + s.rowCount + 1;
+          this.setState({ pendingRow: row });
+          if (!confirmFirst) { this.runSave(); return; }
+        }
+        this.setState(st => ({ step: st.step + 1 }));
+      },
+      commit: () => this.runSave(),
+      cancel: () => this.setState(Object.assign(this.clear(), { flow: null, promoting: null, draft: this.reset() })),
+      finish: () => this.setState(Object.assign(this.clear(), { flow: null, promoting: null, draft: this.reset(), tab: 'home' })),
+      again: () => this.setState(Object.assign(this.clear(), { draft: this.reset() })),
+      manual: () => this.setState({ step: 1, scan: null }),
+      noop: () => {},
+    };
+  }
+}
+
+</script>
+</body>
+</html>
