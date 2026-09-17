@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Reading Tracker">
+<meta name="theme-color" content="#141210">
+<link rel="manifest" href="./manifest.json">
+<title>Reading Tracker</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail" data-bg-color="#141210">
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" fill="#141210"/>
+<g transform="translate(600 400)">
+<rect x="-150" y="-190" width="140" height="380" rx="10" fill="#e0b168"/>
+<rect x="10" y="-190" width="140" height="380" rx="10" fill="#cf7a55"/>
+<rect x="-150" y="-190" width="140" height="380" rx="10" fill="none" stroke="#141210" stroke-width="10"/>
+<rect x="-105" y="-120" width="52" height="8" rx="4" fill="#141210" opacity=".45"/>
+<rect x="55" y="-120" width="52" height="8" rx="4" fill="#141210" opacity=".45"/>
+</g>
+</svg>
+</template>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#141210">
+<meta name="apple-mobile-web-app-title" content="Reading Tracker">
+<link rel="manifest" href="./manifest.json">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=Karla:wght@400;500;600;700&display=swap">
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="reading-data.js"></script>
+<script src="image-slot.js"></script>
+<style>
+.rt { --d:'Newsreader',Georgia,serif; --b:'Karla','Helvetica Neue',sans-serif; }
+.rt-dark { --bg:#141210; --s1:rgba(255,255,255,.055); --s2:rgba(255,255,255,.1); --ink:#f5efe4; --dim:#a79b8a; --line:rgba(255,255,255,.13); --acc:#e0b168; --accInk:#15120f; --alt:#cf7a55; --shade:rgba(0,0,0,.58); }
+.rt-light { --bg:#f2ebdf; --s1:rgba(255,255,255,.62); --s2:rgba(255,255,255,.86); --ink:#231e18; --dim:#6b6152; --line:rgba(45,34,22,.14); --acc:#8c6420; --accInk:#fffdf8; --alt:#a8452a; --shade:rgba(30,24,16,.4); }
+.rt ::-webkit-scrollbar { width:0; height:0; }
+html, body { margin:0 !important; padding:0 !important; overflow:hidden; position:fixed; inset:0; overscroll-behavior:none; background:#141210; }
+html, body { width:100% !important; height:100% !important; min-height:100% !important; max-height:100% !important; }
+#dc-root, #dc-root > .sc-host { height:100% !important; }
+#dc-root > .sc-host > div { height:100% !important; }
+.rt { -webkit-tap-highlight-color:transparent; position:relative; height:100%; overflow:hidden; }
+.rt input, .rt select, .rt textarea, .rt button { font-family:var(--b); }
+.rt select { appearance:none; -webkit-appearance:none; }
+.rt a { color:var(--acc); }
+.rt a:hover { color:var(--ink); }
+@keyframes rtup { from { transform:translateY(22px); opacity:0 } to { transform:none; opacity:1 } }
+@keyframes rtin { from { transform:translateY(10px); opacity:0 } to { transform:none; opacity:1 } }
+@keyframes rtdrift { 0% { transform:translate3d(0,0,0) scale(1) } 100% { transform:translate3d(-4%,3%,0) scale(1.12) } }
+.rt button { transition:transform .22s cubic-bezier(.2,.9,.25,1), background .2s ease, border-color .2s ease, opacity .2s ease; }
+.rt button:active { transform:scale(.965); }
+.rt select:focus-visible, .rt input:focus-visible, .rt textarea:focus-visible, .rt button:focus-visible { outline:2px solid var(--acc); outline-offset:2px; }
+.rt-screen { animation:rtin .32s cubic-bezier(.2,.9,.25,1) both; }
+.rt-glass { backdrop-filter:blur(22px) saturate(170%); -webkit-backdrop-filter:blur(22px) saturate(170%); }
+</style>
+</helmet>
+<div class="{{ rootClass }}" style="background:var(--bg);color:var(--ink);font-family:var(--b)">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--b)">
+<div style="position:absolute;inset:-12%;pointer-events:none;z-index:0;background:radial-gradient(38% 26% at 18% 6%, rgba(224,177,104,.34), transparent 70%),radial-gradient(34% 24% at 92% 22%, rgba(150,108,188,.26), transparent 70%),radial-gradient(44% 30% at 55% 102%, rgba(96,146,124,.28), transparent 70%);filter:blur(26px);animation:rtdrift 22s ease-in-out infinite alternate"></div>
+
+<div style="position:relative;z-index:2;flex:none;padding:calc(env(safe-area-inset-top) + 16px) 18px 12px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+<div style="min-width:0">
+<div style="font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)">{{ kicker }}</div>
+<div style="font-family:var(--d);font-weight:400;font-size:29px;line-height:1.06;letter-spacing:-.015em;margin-top:5px">{{ title }}</div>
+</div>
+<div style="display:flex;align-items:center;gap:7px;flex:none;padding-bottom:4px">
+<sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+<select value="{{ year }}" onChange="{{ onYear }}" style="background:var(--s2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer">
+<sc-for list="{{ yearOpts }}" as="y" hint-placeholder-count="4"><option value="{{ y }}">{{ y }}</option></sc-for>
+</select>
+</sc-if>
+<sc-if value="{{ hasPending }}" hint-placeholder-val="{{ true }}">
+<button onClick="{{ openExport }}" style="border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:0 13px;min-height:40px;font-size:11px;font-weight:700;letter-spacing:.04em;cursor:pointer;white-space:nowrap">{{ pendingLabel }}</button>
+</sc-if>
+<sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+<button onClick="{{ goSettings }}" aria-label="Settings" style="flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:999px;background:var(--s1);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);color:var(--ink);display:grid;place-items:center;cursor:pointer">
+<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2 2 2 0 1 1-4 0 1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a2 2 0 1 1 0-4 1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2 2 2 0 1 1 4 0A1.7 1.7 0 0 0 18.4 5.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9 2 2 0 1 1 0 4z"></path></svg>
+</button>
+</sc-if>
+</div>
+</div>
+</div>
+
+<div style="position:relative;z-index:2;flex:1;overflow-y:auto;overscroll-behavior:contain;padding:0 18px 22px">
+
+<sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+<div class="rt-screen" data-screen-label="Today">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:6px 0 12px">
+<div style="font-family:var(--d);font-size:19px">On the shelf</div>
+<div style="font-size:10.5px;color:var(--dim)">Swipe · tap a spine</div>
+</div>
+<div style="display:flex;gap:15px;align-items:flex-end;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding:8px 2px 0">
+<sc-for list="{{ reading }}" as="b" hint-placeholder-count="3">
+<button onClick="{{ onDetail }}" data-id="{{ b.id }}" style="flex:none;width:104px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left;color:var(--ink);scroll-snap-align:center">
+<span style="display:block;width:104px;height:158px;border-radius:5px 11px 11px 5px;overflow:hidden;background:var(--s2);box-shadow:0 20px 28px -14px rgba(0,0,0,.7), inset 4px 0 8px -3px rgba(0,0,0,.55), inset -1px 0 0 rgba(255,255,255,.12)">
+<sc-if value="{{ b.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ b.imgStyle }}"></div></sc-if>
+</span>
+<span style="display:block;font-size:11.5px;font-weight:600;line-height:1.25;margin-top:10px">{{ b.title }}</span>
+<span style="display:block;font-size:10.5px;color:var(--dim);margin-top:2px">{{ b.pctLabel }}</span>
+<span style="display:block;height:3px;border-radius:999px;background:var(--s2);overflow:hidden;margin-top:7px"><span style="{{ b.barStyle }}"></span></span>
+</button>
+</sc-for>
+</div>
+<div style="height:10px;margin-top:7px;border-radius:4px;background:linear-gradient(180deg,var(--s2),transparent);box-shadow:0 14px 24px -12px rgba(0,0,0,.85)"></div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px">
+<button onClick="{{ openStart }}" style="border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;background:var(--s1);color:var(--ink);padding:15px 13px;text-align:left;cursor:pointer;min-height:76px">
+<span style="display:block;font-family:var(--d);font-size:16px">Start a book</span>
+<span style="display:block;font-size:11px;color:var(--dim);margin-top:3px">TBR or anything new</span>
+</button>
+<button onClick="{{ openTbrAdd }}" style="border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;background:var(--s1);color:var(--ink);padding:15px 13px;text-align:left;cursor:pointer;min-height:76px">
+<span style="display:block;font-family:var(--d);font-size:16px">Add to TBR</span>
+<span style="display:block;font-size:11px;color:var(--dim);margin-top:3px">Cover and blurb fill in</span>
+</button>
+<button onClick="{{ openClose }}" style="border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;background:var(--s1);color:var(--ink);padding:15px 13px;text-align:left;cursor:pointer;min-height:76px">
+<span style="display:block;font-family:var(--d);font-size:16px">Close out</span>
+<span style="display:block;font-size:11px;color:var(--dim);margin-top:3px">Finished or DNF</span>
+</button>
+<button onClick="{{ openExport }}" style="border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;background:var(--s1);color:var(--ink);padding:15px 13px;text-align:left;cursor:pointer;min-height:76px">
+<span style="display:block;font-family:var(--d);font-size:16px">Take it out</span>
+<span style="display:block;font-size:11px;color:var(--dim);margin-top:3px">{{ pendingSub }}</span>
+</button>
+</div>
+
+<sc-if value="{{ hasSoon }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="font-family:var(--d);font-size:18px;margin:22px 0 10px">Coming to screens</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ soon }}" as="m" hint-placeholder-count="3">
+<div style="{{ m.rowStyle }}">
+<div style="flex:1;min-width:0">
+<div style="font-family:var(--d);font-size:15px;line-height:1.2">{{ m.title }}</div>
+<div style="font-size:11px;color:var(--dim);margin-top:2px">{{ m.note }}</div>
+</div>
+<sc-if value="{{ m.isOut }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ markReleased }}" data-id="{{ m.id }}" style="flex:none;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:0 14px;min-height:44px;font-size:11.5px;font-weight:700;cursor:pointer">It's out</button>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<div style="font-family:var(--d);font-size:18px;margin:22px 0 10px">Recently finished</div>
+<div style="display:flex;gap:11px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding-bottom:4px">
+<sc-for list="{{ recent }}" as="b" hint-placeholder-count="5">
+<button onClick="{{ onDetail }}" data-id="{{ b.id }}" style="flex:none;width:96px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left;color:var(--ink)">
+<span style="display:block;width:96px;height:144px;border-radius:10px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ b.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ b.imgStyle }}"></div></sc-if>
+</span>
+<span style="display:block;font-size:11.5px;line-height:1.25;margin-top:6px;font-weight:600">{{ b.title }}</span>
+<span style="display:block;font-size:10.5px;color:var(--dim);margin-top:1px">{{ b.dateLabel }}</span>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isLib }}" hint-placeholder-val="{{ false }}">
+<div class="rt-screen" data-screen-label="Library">
+<input value="{{ libQ }}" onInput="{{ onLibQ }}" placeholder="Search title, author, series" style="width:100%;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:999px;color:var(--ink);padding:11px 15px;font-size:13px;margin:4px 0 10px">
+<div style="display:flex;gap:6px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding-bottom:8px">
+<sc-for list="{{ libTabs }}" as="t" hint-placeholder-count="4">
+<button onClick="{{ onLibTab }}" data-v="{{ t.v }}" style="{{ t.style }}">{{ t.label }}</button>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 0 10px">
+<div style="font-size:11px;color:var(--dim)">{{ libCount }}</div>
+<select value="{{ libSort }}" onChange="{{ onLibSort }}" style="background:var(--s2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:11.5px;font-weight:600;cursor:pointer">
+<sc-for list="{{ sortOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.label }}</option></sc-for>
+</select>
+</div>
+
+<sc-if value="{{ isDnfTab }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ dnfList }}" as="r" hint-placeholder-count="4">
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:12px;display:flex;gap:12px">
+<div style="width:58px;height:87px;flex:none;border-radius:8px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ r.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ r.imgStyle }}"></div></sc-if>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font-family:var(--d);font-size:16px;line-height:1.2">{{ r.title }}</div>
+<div style="font-size:11px;color:var(--dim);margin-top:2px">{{ r.dateLabel }}</div>
+<div style="display:inline-block;margin-top:7px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:10.5px;font-weight:600;color:var(--acc)">{{ r.reason }}</div>
+<div style="font-size:12px;line-height:1.5;color:var(--dim);margin-top:7px;text-wrap:pretty">{{ r.thoughts }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ showLibList }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ libList }}" as="b" hint-placeholder-count="6">
+<button onClick="{{ onDetail }}" data-id="{{ b.id }}" style="display:flex;gap:12px;align-items:stretch;text-align:left;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:11px;cursor:pointer;color:var(--ink)">
+<span style="width:56px;height:84px;flex:none;border-radius:8px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ b.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ b.imgStyle }}"></div></sc-if>
+</span>
+<span style="flex:1;min-width:0;display:flex;flex-direction:column">
+<span style="display:flex;align-items:center;gap:6px">
+<span style="font-family:var(--d);font-size:16px;line-height:1.2;min-width:0">{{ b.title }}</span>
+<sc-if value="{{ b.unsynced }}" hint-placeholder-val="{{ false }}">
+<span style="flex:none;width:7px;height:7px;border-radius:999px;background:var(--acc)" title="Not in the sheet yet"></span>
+</sc-if>
+</span>
+<span style="display:block;font-size:11.5px;color:var(--dim);margin-top:2px">{{ b.author }}</span>
+<span style="flex:1"></span>
+<span style="display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--dim)">
+<span style="font-weight:700;color:var(--ink)">{{ b.status }}</span>
+<span>{{ b.dateLabel }}</span>
+<span>{{ b.rating }}</span>
+</span>
+</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTbr }}" hint-placeholder-val="{{ false }}">
+<div class="rt-screen" data-screen-label="To be read">
+<div style="display:flex;gap:8px;align-items:center;margin:4px 0 12px">
+<select value="{{ tbrTier }}" onChange="{{ onTbrTier }}" style="flex:1;background:var(--s1);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:11px 14px;font-size:12.5px;font-weight:600;cursor:pointer">
+<sc-for list="{{ tierOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}">{{ o.label }}</option></sc-for>
+</select>
+<button onClick="{{ openTbrAdd }}" style="flex:none;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:11px 16px;font-size:12px;font-weight:700;cursor:pointer">Add</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ tbrList }}" as="t" hint-placeholder-count="6">
+<div onClick="{{ onTbrDetail }}" data-id="{{ t.id }}" style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:11px;display:flex;gap:12px;cursor:pointer">
+<div style="width:56px;height:84px;flex:none;border-radius:8px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ t.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ t.imgStyle }}"></div></sc-if>
+</div>
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+<div style="display:flex;align-items:center;gap:6px">
+<div style="font-family:var(--d);font-size:16px;line-height:1.2;min-width:0">{{ t.title }}</div>
+<sc-if value="{{ t.unsynced }}" hint-placeholder-val="{{ false }}"><div style="flex:none;width:7px;height:7px;border-radius:999px;background:var(--acc)"></div></sc-if>
+</div>
+<div style="font-size:11.5px;color:var(--dim);margin-top:2px">{{ t.author }}</div>
+<div style="font-size:11px;color:var(--dim);margin-top:5px;line-height:1.4">{{ t.info }}</div>
+<div style="font-size:10.5px;color:var(--dim);margin-top:4px">{{ t.meta }}</div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:7px;margin-top:8px">
+<div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)">{{ t.order }}</div>
+<button onClick="{{ onStartFromTbr }}" data-id="{{ t.id }}" style="border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer">Start</button>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMovies }}" hint-placeholder-val="{{ false }}">
+<div class="rt-screen" data-screen-label="Movies">
+<input value="{{ mvQ }}" onInput="{{ onMvQ }}" placeholder="Search a title" style="width:100%;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:999px;color:var(--ink);padding:11px 15px;font-size:13px;margin:4px 0 9px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+<sc-for list="{{ mvFilters }}" as="f" hint-placeholder-count="4">
+<select value="{{ f.value }}" onChange="{{ onMvFilter }}" data-k="{{ f.k }}" style="background:var(--s1);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:11.5px;font-weight:600;cursor:pointer;min-width:0">
+<sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.label }}</option></sc-for>
+</select>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 0">
+<div style="font-size:11px;color:var(--dim)">{{ mvCount }}</div>
+<div style="display:flex;gap:7px">
+<button onClick="{{ clearMv }}" style="border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer">Clear</button>
+<button onClick="{{ openMovieAdd }}" style="border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer">Add movie</button>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<sc-for list="{{ movieList }}" as="m" hint-placeholder-count="6">
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:11px;display:flex;gap:12px">
+<div style="width:56px;height:84px;flex:none;border-radius:8px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ m.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ m.imgStyle }}"></div></sc-if>
+</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:center;gap:6px">
+<div style="font-family:var(--d);font-size:16px;line-height:1.2;min-width:0">{{ m.title }}</div>
+<sc-if value="{{ m.unsynced }}" hint-placeholder-val="{{ false }}"><div style="flex:none;width:7px;height:7px;border-radius:999px;background:var(--acc)"></div></sc-if>
+</div>
+<div style="font-size:11px;color:var(--dim);margin-top:3px">{{ m.meta }}</div>
+<div style="font-size:11.5px;color:var(--dim);margin-top:6px;line-height:1.45;text-wrap:pretty">{{ m.vibe }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+<div class="rt-screen" data-screen-label="Stats">
+<div style="font-family:var(--d);font-size:20px;line-height:1.2;margin:4px 0 3px">{{ statsHeadline }}</div>
+<div style="font-family:var(--d);font-style:italic;font-size:14px;color:var(--dim)">{{ statsSub }}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0">
+<sc-for list="{{ statCards }}" as="c" hint-placeholder-count="6">
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:13px">
+<div style="font-family:var(--d);font-size:27px;line-height:1">{{ c.value }}</div>
+<div style="font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-top:6px">{{ c.label }}</div>
+</div>
+</sc-for>
+</div>
+
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:26px;padding:16px">
+<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:10px">
+<div>
+<div style="font-family:var(--d);font-size:34px;line-height:1">{{ calMonthNum }}<span style="font-size:13px;color:var(--dim);margin-left:7px">{{ year }}</span></div>
+<div style="font-family:var(--d);font-style:italic;font-size:22px;line-height:1.1;margin-top:2px">{{ calMonthName }}</div>
+</div>
+<div style="display:flex;gap:6px">
+<button onClick="{{ prevMonth }}" style="width:34px;height:34px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font-size:14px;cursor:pointer">‹</button>
+<button onClick="{{ nextMonth }}" style="width:34px;height:34px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font-size:14px;cursor:pointer">›</button>
+</div>
+</div>
+<div style="display:flex;gap:4px;background:var(--s2);border-radius:999px;padding:4px;margin:13px 0 12px">
+<button onClick="{{ setCompact }}" style="{{ compactStyle }}">Compact</button>
+<button onClick="{{ setFull }}" style="{{ fullStyle }}">Full</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px">
+<sc-for list="{{ dowNames }}" as="d" hint-placeholder-count="7">
+<div style="text-align:center;font-size:9.5px;font-weight:600;letter-spacing:.06em;color:var(--dim)">{{ d }}</div>
+</sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">
+<sc-for list="{{ calCells }}" as="c" hint-placeholder-count="35">
+<button onClick="{{ onCalDay }}" data-iso="{{ c.iso }}" style="{{ c.style }}">
+<div style="{{ c.dayStyle }}">{{ c.day }}</div>
+<sc-if value="{{ c.hasCover }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:3px;right:3px;bottom:3px;top:15px">
+<sc-for list="{{ c.covers }}" as="cv" hint-placeholder-count="1"><div style="{{ cv.style }}"></div></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ c.hasMore }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;right:2px;bottom:2px;z-index:4;background:var(--ink);color:var(--bg);border-radius:999px;padding:1px 4px;font-size:8px;font-weight:700">{{ c.moreLabel }}</div>
+</sc-if>
+<sc-if value="{{ c.hasDot }}" hint-placeholder-val="{{ false }}">
+<div style="{{ c.dotStyle }}"></div>
+</sc-if>
+</button>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:12px;font-size:10.5px;color:var(--dim)">
+<span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:999px;background:var(--acc)"></span>Reading</span>
+<span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:999px;background:var(--alt)"></span>Put down</span>
+<span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;border:2px solid var(--ink)"></span>Today</span>
+</div>
+<div style="font-size:11.5px;color:var(--dim);margin-top:9px">{{ calFoot }}</div>
+</div>
+
+<div style="font-family:var(--d);font-size:18px;margin:20px 0 9px">Five star reads</div>
+<sc-if value="{{ hasFiveStar }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding-bottom:4px">
+<sc-for list="{{ fiveStarList }}" as="b" hint-placeholder-count="4">
+<button onClick="{{ onDetail }}" data-id="{{ b.id }}" style="flex:none;width:86px;border:0;background:transparent;padding:0;cursor:pointer;text-align:left;color:var(--ink)">
+<span style="display:block;width:86px;height:129px;border-radius:10px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ b.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ b.imgStyle }}"></div></sc-if>
+</span>
+<span style="display:block;font-size:11px;line-height:1.25;margin-top:6px;font-weight:600">{{ b.title }}</span>
+<span style="display:block;font-size:10.5px;color:var(--dim);margin-top:1px">{{ b.dateLabel }}</span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ noFiveStar }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12px;color:var(--dim);line-height:1.5">No five star reads logged in {{ year }} yet.</div>
+</sc-if>
+
+<div style="font-family:var(--d);font-size:18px;margin:22px 0 9px">Bookish bests</div>
+<div style="border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:24px;overflow:hidden">
+<sc-for list="{{ bests }}" as="x" hint-placeholder-count="5">
+<div style="display:flex;gap:11px;align-items:center;padding:11px 13px;border-bottom:1px solid var(--line)">
+<div style="flex:none;width:34px;height:51px;border-radius:6px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ x.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ x.imgStyle }}"></div></sc-if>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)">{{ x.label }}</div>
+<div style="font-family:var(--d);font-size:15px;line-height:1.2;margin-top:3px">{{ x.title }}</div>
+<div style="font-size:10.5px;color:var(--dim);margin-top:2px">{{ x.note }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="font-family:var(--d);font-size:18px;margin:22px 0 9px">By genre</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{ genreBars }}" as="g" hint-placeholder-count="5">
+<div>
+<div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:4px"><span>{{ g.label }}</span><span style="color:var(--dim)">{{ g.n }}</span></div>
+<div style="height:5px;border-radius:999px;background:var(--s2);overflow:hidden"><div style="{{ g.barStyle }}"></div></div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSet }}" hint-placeholder-val="{{ false }}">
+<div class="rt-screen" data-screen-label="Settings">
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:6px 0 9px">Appearance</div>
+<div style="display:flex;gap:4px;background:var(--s2);border-radius:999px;padding:4px">
+<button onClick="{{ setDark }}" style="{{ darkStyle }}">Dark</button>
+<button onClick="{{ setLight }}" style="{{ lightStyle }}">Light</button>
+</div>
+
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:22px 0 9px">Welcome cover</div>
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:26px;padding:16px">
+<div style="font-family:var(--d);font-size:17px">Change the “Let’s go” image</div>
+<div style="font-size:12px;color:var(--dim);line-height:1.5;margin-top:5px">Choose any photo from your phone. It stays saved on this device.</div>
+<div style="display:flex;gap:8px;margin-top:13px">
+<label style="flex:1;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:12px 0;font-size:12.5px;font-weight:700;cursor:pointer;text-align:center">
+Choose image
+<input type="file" accept="image/*" onChange="{{ onWelcomeCover }}" style="display:none">
+</label>
+<button onClick="{{ resetWelcomeCover }}" style="flex:1;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:12px 0;font-size:12.5px;font-weight:700;cursor:pointer">Restore original</button>
+</div>
+<div style="font-size:11px;color:var(--dim);margin-top:10px">{{ welcomeCoverLine }}</div>
+</div>
+
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:22px 0 9px">Passcode</div>
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:26px;padding:16px">
+<div style="font-size:12.5px;color:var(--dim);line-height:1.5">{{ passLine }}</div>
+<div style="display:flex;gap:8px;margin-top:11px">
+<input value="{{ passDraft }}" onInput="{{ onPassDraft }}" inputmode="numeric" maxlength="4" placeholder="Four digits" style="flex:1;min-width:0;box-sizing:border-box;background:var(--bg);border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px;letter-spacing:.3em">
+<button onClick="{{ savePass }}" style="flex:none;border:0;border-radius:12px;background:var(--acc);color:var(--accInk);padding:0 16px;min-height:44px;font-size:12.5px;font-weight:700;cursor:pointer">Save</button>
+</div>
+<button onClick="{{ clearPass }}" style="width:100%;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);padding:0;min-height:44px;font-size:12px;font-weight:600;cursor:pointer;margin-top:9px">Turn the passcode off</button>
+</div>
+
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:22px 0 9px">Sheet sync</div>
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:26px;padding:16px">
+<div style="font-size:12.5px;line-height:1.55;color:var(--dim);text-wrap:pretty">Your sheet is the source of truth. Import it to refresh the app, and take out only the rows that are new or changed since that import.</div>
+<div style="display:flex;gap:8px;margin-top:13px">
+<button onClick="{{ openExport }}" style="flex:1;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:12px 0;font-size:12.5px;font-weight:700;cursor:pointer">Take it out</button>
+<label style="flex:1;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:12px 0;font-size:12.5px;font-weight:700;cursor:pointer;text-align:center">
+Bring it in
+<input type="file" accept=".xlsx,.xls,.csv,.tsv" onChange="{{ onFile }}" style="display:none">
+</label>
+</div>
+<div style="font-size:11px;color:var(--dim);margin-top:10px">{{ syncLine }}</div>
+</div>
+
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:22px 0 9px">Paste instead</div>
+<textarea value="{{ pasteText }}" onInput="{{ onPaste }}" placeholder="Paste rows straight from the sheet — headers included" style="width:100%;box-sizing:border-box;min-height:88px;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:14px;color:var(--ink);padding:12px;font-size:12px;line-height:1.5;resize:vertical"></textarea>
+<button onClick="{{ doPasteImport }}" style="width:100%;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:11px 0;font-size:12.5px;font-weight:700;cursor:pointer;margin-top:9px">Organize pasted rows</button>
+
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:22px 0 9px">In the app</div>
+<div style="border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:24px;overflow:hidden">
+<sc-for list="{{ counts }}" as="c" hint-placeholder-count="4">
+<div style="display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line);font-size:12.5px"><span>{{ c.label }}</span><span style="color:var(--dim)">{{ c.n }}</span></div>
+</sc-for>
+</div>
+<button onClick="{{ resetAll }}" style="width:100%;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);padding:11px 0;font-size:12px;font-weight:600;cursor:pointer;margin-top:14px">Reset to the loaded file</button>
+</div>
+</sc-if>
+
+</div>
+
+<div class="rt-glass" style="position:relative;z-index:3;flex:none;border-top:1px solid var(--line);background:var(--s1);display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:8px 9px max(10px, env(safe-area-inset-bottom));flex:0 0 auto">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ onNav }}" data-v="{{ t.v }}" style="{{ t.style }}">
+<svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="{{ t.icon }}"></path></svg>
+<span style="{{ t.labelStyle }}">{{ t.label }}</span>
+</button>
+</sc-for>
+</div>
+
+<sc-if value="{{ hasModal }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--shade);display:flex;align-items:flex-end;z-index:20">
+<div class="rt-glass" style="width:100%;max-height:88%;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--s2),var(--bg) 58%);border-top:1px solid var(--line);border-radius:30px 30px 0 0;animation:rtup .3s cubic-bezier(.2,.9,.25,1);box-shadow:0 -24px 60px rgba(0,0,0,.45)">
+<div style="flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 12px;border-bottom:1px solid var(--line)">
+<div style="font-family:var(--d);font-size:20px;line-height:1.1">{{ modalTitle }}</div>
+<button onClick="{{ closeModal }}" style="flex:none;width:44px;height:44px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);font-size:15px;cursor:pointer">✕</button>
+</div>
+<div style="flex:1;overflow-y:auto;padding:14px 18px 20px">
+
+<sc-if value="{{ mDetail }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="margin:-14px -18px 0;padding:26px 18px 22px;background:var(--s2);display:flex;justify-content:center">
+<div style="width:156px;height:234px;border-radius:10px;overflow:hidden;background:var(--s1);box-shadow:0 14px 30px var(--shade)">
+<sc-if value="{{ detail.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ detail.imgStyle }}"></div></sc-if>
+</div>
+</div>
+<div style="text-align:center;padding:18px 4px 0">
+<div style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)">{{ detail.genreLine }}</div>
+<div style="font-family:var(--d);font-size:25px;line-height:1.12;margin-top:8px;text-wrap:pretty">{{ detail.title }}</div>
+<div style="font-family:var(--d);font-style:italic;font-size:14px;color:var(--dim);margin-top:4px">{{ detail.author }}</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:11px">
+<div style="font-size:13px">{{ detail.rating }}</div>
+<div style="font-size:11.5px;color:var(--dim)">{{ detail.scoreLabel }}</div>
+</div>
+<div style="font-size:11.5px;color:var(--dim);margin-top:7px;line-height:1.5">{{ detail.meta }}</div>
+<div style="display:flex;gap:8px;justify-content:center;margin-top:15px">
+<sc-if value="{{ detail.isReading }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ onCloseOut }}" data-id="{{ detail.id }}" style="border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:0 20px;min-height:44px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap">Close it out</button>
+</sc-if>
+<button onClick="{{ copyOne }}" style="border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:0 20px;min-height:44px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap">Copy row</button>
+</div>
+</div>
+<sc-if value="{{ detail.isReading }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:8px;align-items:center;margin-top:14px">
+<input value="{{ f.page }}" onInput="{{ onF }}" data-k="page" inputmode="numeric" placeholder="Current page" style="flex:1;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<button onClick="{{ savePage }}" style="flex:none;border:0;border-radius:12px;background:var(--acc);color:var(--accInk);padding:12px 16px;font-size:12.5px;font-weight:700;cursor:pointer">Save</button>
+</div>
+</sc-if>
+<sc-if value="{{ detail.hasFeel }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:18px;padding:12px;margin-top:14px;font-size:12.5px;line-height:1.5">{{ detail.feel }}</div>
+</sc-if>
+<sc-if value="{{ detail.hasSummary }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="height:1px;background:var(--line);margin:18px 0 14px"></div>
+<div style="font-family:var(--d);font-size:17px;margin-bottom:8px">Book description</div>
+<div style="font-size:12.5px;line-height:1.65;color:var(--dim);text-wrap:pretty">{{ detail.summary }}</div>
+</div>
+</sc-if>
+<sc-if value="{{ detail.hasNotes }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:16px 0 6px">My notes</div>
+<div style="font-size:12.5px;line-height:1.6;text-wrap:pretty">{{ detail.notes }}</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ mDay }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="font-size:11.5px;color:var(--dim);margin-bottom:12px">{{ dayCount }}</div>
+<div style="display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ dayBooks }}" as="b" hint-placeholder-count="2">
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:13px">
+<div style="display:flex;gap:12px">
+<div style="width:62px;height:93px;flex:none;border-radius:8px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ b.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ b.imgStyle }}"></div></sc-if>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font-family:var(--d);font-size:16px;line-height:1.2">{{ b.title }}</div>
+<div style="font-size:11.5px;color:var(--dim);margin-top:2px">{{ b.author }}</div>
+<div style="font-size:10.5px;color:var(--acc);margin-top:6px;font-weight:600">{{ b.dayNote }}</div>
+<div style="font-size:11px;color:var(--dim);margin-top:4px">{{ b.rating }}</div>
+</div>
+</div>
+<div style="font-size:12px;line-height:1.6;color:var(--dim);margin-top:11px;text-wrap:pretty">{{ b.summary }}</div>
+<button onClick="{{ onDetail }}" data-id="{{ b.id }}" style="width:100%;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:0;min-height:44px;font-size:12px;font-weight:700;cursor:pointer;margin-top:12px">Open the book</button>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ mTbrDetail }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="display:flex;gap:13px">
+<div style="width:92px;height:138px;flex:none;border-radius:12px;overflow:hidden;background:var(--s2)">
+<sc-if value="{{ tbrDetail.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ tbrDetail.imgStyle }}"></div></sc-if>
+</div>
+<div style="flex:1;min-width:0">
+<div style="font-family:var(--d);font-size:19px;line-height:1.15">{{ tbrDetail.title }}</div>
+<div style="font-size:12px;color:var(--dim);margin-top:3px">{{ tbrDetail.author }}</div>
+<div style="font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:11px 0 5px">Reading order</div>
+<select value="{{ tbrDetail.order }}" onChange="{{ onTbrOrder }}" style="{{ selTbrOrder }}">
+<sc-for list="{{ tierSetOpts }}" as="o" hint-placeholder-count="8"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+</div>
+</div>
+<div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px">
+<sc-for list="{{ tbrDetail.rows }}" as="r" hint-placeholder-count="3">
+<div style="display:flex;justify-content:space-between;gap:12px;padding:11px 13px;border-bottom:1px solid var(--line);font-size:12.5px"><span style="color:var(--dim)">{{ r.label }}</span><span style="text-align:right">{{ r.value }}</span></div>
+</sc-for>
+</div>
+<sc-if value="{{ tbrDetail.hasSummary }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:16px 0 6px">Summary</div>
+<div style="font-size:12.5px;line-height:1.6;color:var(--dim);text-wrap:pretty">{{ tbrDetail.summary }}</div>
+</div>
+</sc-if>
+<div style="display:flex;gap:8px;margin-top:18px">
+<button onClick="{{ onStartFromTbr }}" data-id="{{ tbrDetail.id }}" style="flex:1;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:0;min-height:46px;font-size:13px;font-weight:700;cursor:pointer">Start reading it</button>
+<button onClick="{{ copyTbrRow }}" style="flex:none;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:0 16px;min-height:46px;font-size:12.5px;font-weight:700;cursor:pointer">Copy row</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ mClose }}" hint-placeholder-val="{{ false }}">
+<div>
+<sc-if value="{{ needsPick }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:12px;color:var(--dim);margin-bottom:9px">Which book?</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<sc-for list="{{ reading }}" as="b" hint-placeholder-count="3">
+<button onClick="{{ onCloseOut }}" data-id="{{ b.id }}" style="display:flex;gap:11px;align-items:center;text-align:left;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:18px;padding:10px;cursor:pointer;color:var(--ink)">
+<span style="width:40px;height:60px;flex:none;border-radius:7px;overflow:hidden;background:var(--s2)"><sc-if value="{{ b.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ b.imgStyle }}"></div></sc-if></span>
+<span style="flex:1;min-width:0"><span style="display:block;font-family:var(--d);font-size:15px">{{ b.title }}</span><span style="display:block;font-size:11px;color:var(--dim)">{{ b.author }}</span></span>
+</button>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ hasPickedBook }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="display:flex;gap:11px;align-items:center;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:18px;padding:10px">
+<div style="width:40px;height:60px;flex:none;border-radius:7px;overflow:hidden;background:var(--s2)"><sc-if value="{{ f.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ f.imgStyle }}"></div></sc-if></div>
+<div style="flex:1;min-width:0"><div style="font-family:var(--d);font-size:15px">{{ f.title }}</div><div style="font-size:11px;color:var(--dim)">{{ f.author }}</div></div>
+</div>
+<div style="display:flex;gap:4px;background:var(--s2);border-radius:999px;padding:4px;margin:13px 0">
+<button onClick="{{ setFinished }}" style="{{ finStyle }}">Finished</button>
+<button onClick="{{ setDnf }}" style="{{ dnfStyle }}">DNF</button>
+</div>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">Date</div>
+<input type="date" value="{{ f.date }}" onInput="{{ onF }}" data-k="date" style="width:100%;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<sc-if value="{{ isFinishing }}" hint-placeholder-val="{{ true }}">
+<div>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:15px 0 6px">Rating</div>
+<select value="{{ f.rating }}" onChange="{{ onF }}" data-k="rating" style="{{ selRating }}">
+<option value="">Pick a rating</option>
+<sc-for list="{{ ratingOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:15px 0 6px">How it felt</div>
+<select value="{{ f.feel }}" onChange="{{ onF }}" data-k="feel" style="{{ selFeel }}">
+<option value="">How it felt</option>
+<sc-for list="{{ feelOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+</div>
+</sc-if>
+<sc-if value="{{ isDnfing }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:15px 0 6px">Why you stopped</div>
+<select value="{{ f.reason }}" onChange="{{ onF }}" data-k="reason" style="{{ selReason }}">
+<option value="">Pick a reason</option>
+<sc-for list="{{ reasonOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+</div>
+</sc-if>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:15px 0 6px">{{ reviewLabel }}</div>
+<textarea value="{{ f.notes }}" onInput="{{ onF }}" data-k="notes" style="width:100%;box-sizing:border-box;min-height:90px;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:14px;color:var(--ink);padding:12px;font-size:12.5px;line-height:1.5;resize:vertical"></textarea>
+<button onClick="{{ saveClose }}" style="width:100%;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:13px 0;font-size:13px;font-weight:700;cursor:pointer;margin-top:15px">Log it</button>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ mLookup }}" hint-placeholder-val="{{ false }}">
+<div>
+<sc-if value="{{ showTbrSource }}" hint-placeholder-val="{{ false }}">
+<div>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 8px">From your TBR</div>
+<div style="display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;padding-bottom:6px">
+<sc-for list="{{ tbrQuick }}" as="t" hint-placeholder-count="5">
+<button onClick="{{ onStartFromTbr }}" data-id="{{ t.id }}" style="flex:none;width:74px;border:0;background:transparent;padding:0;cursor:pointer;color:var(--ink);text-align:left">
+<span style="display:block;width:74px;height:111px;border-radius:9px;overflow:hidden;background:var(--s2)"><sc-if value="{{ t.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ t.imgStyle }}"></div></sc-if></span>
+<span style="display:block;font-size:10.5px;line-height:1.25;margin-top:5px">{{ t.title }}</span>
+</button>
+</sc-for>
+</div>
+<div style="height:1px;background:var(--line);margin:14px 0"></div>
+</div>
+</sc-if>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 8px">{{ lookupLabel }}</div>
+<div style="display:flex;gap:8px">
+<input value="{{ lk.q }}" onInput="{{ onLq }}" placeholder="Title, or title and author" style="flex:1;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<button onClick="{{ doLookup }}" style="flex:none;border:0;border-radius:12px;background:var(--acc);color:var(--accInk);padding:12px 16px;font-size:12.5px;font-weight:700;cursor:pointer">{{ lookupBtn }}</button>
+</div>
+<sc-if value="{{ lk.err }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:11.5px;color:var(--acc);margin-top:9px">{{ lk.err }}</div>
+</sc-if>
+<sc-if value="{{ hasCandidate }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;padding:12px;margin-top:12px">
+<div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)">{{ candIndex }}</div>
+<div style="display:flex;gap:12px;margin-top:9px">
+<div style="width:70px;height:105px;flex:none;border-radius:9px;overflow:hidden;background:var(--s2)"><sc-if value="{{ cand.hasCover }}" hint-placeholder-val="{{ false }}"><div style="{{ cand.imgStyle }}"></div></sc-if></div>
+<div style="flex:1;min-width:0">
+<div style="font-family:var(--d);font-size:16px;line-height:1.2">{{ cand.title }}</div>
+<div style="font-size:11.5px;color:var(--dim);margin-top:2px">{{ cand.author }}</div>
+<div style="font-size:11px;color:var(--dim);margin-top:6px">{{ cand.pagesLabel }}</div>
+</div>
+</div>
+<div style="font-size:11.5px;line-height:1.5;color:var(--dim);margin-top:10px;max-height:112px;overflow-y:auto;text-wrap:pretty">{{ cand.summary }}</div>
+<div style="display:flex;gap:7px;margin-top:12px">
+<button onClick="{{ acceptCand }}" style="flex:1;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:11px 0;font-size:12px;font-weight:700;cursor:pointer">That's the one</button>
+<button onClick="{{ rejectCand }}" style="flex:1;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:11px 0;font-size:12px;font-weight:700;cursor:pointer">Not it — next</button>
+</div>
+</div>
+</sc-if>
+<div style="height:1px;background:var(--line);margin:15px 0"></div>
+<div style="font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 8px">Or fill it in yourself</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<input value="{{ f.title }}" onInput="{{ onF }}" data-k="title" placeholder="Title" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<input value="{{ f.author }}" onInput="{{ onF }}" data-k="author" placeholder="Author" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<div style="display:flex;gap:8px">
+<input value="{{ f.pages }}" onInput="{{ onF }}" data-k="pages" inputmode="numeric" placeholder="Pages" style="flex:1;min-width:0;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<input value="{{ f.cover }}" onInput="{{ onF }}" data-k="cover" placeholder="Cover URL" style="flex:1;min-width:0;box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+</div>
+<sc-if value="{{ mStart }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<select value="{{ f.format }}" onChange="{{ onF }}" data-k="format" style="{{ selFormat }}">
+<option value="">Format</option>
+<sc-for list="{{ formatOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<select value="{{ f.genre }}" onChange="{{ onF }}" data-k="genre" style="{{ selGenre }}">
+<option value="">Genre</option>
+<sc-for list="{{ genreOpts }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<input type="date" value="{{ f.date }}" onInput="{{ onF }}" data-k="date" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+</div>
+</sc-if>
+<sc-if value="{{ mTbrAdd }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<select value="{{ f.order }}" onChange="{{ onF }}" data-k="order" style="{{ selOrder }}">
+<option value="">Reading order</option>
+<sc-for list="{{ orderOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<input value="{{ f.price }}" onInput="{{ onF }}" data-k="price" placeholder="Price or where to get it" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<textarea value="{{ f.summary }}" onInput="{{ onF }}" data-k="summary" placeholder="Summary — filled in for you when the lookup finds one" style="box-sizing:border-box;min-height:96px;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:14px;color:var(--ink);padding:12px;font-size:12.5px;line-height:1.5;resize:vertical"></textarea>
+</div>
+</sc-if>
+</div>
+<button onClick="{{ saveLookup }}" style="width:100%;border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:13px 0;font-size:13px;font-weight:700;cursor:pointer;margin-top:14px">{{ saveLabel }}</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ mMovie }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px">
+<input value="{{ f.title }}" onInput="{{ onF }}" data-k="title" placeholder="Title" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<input value="{{ f.cover }}" onInput="{{ onF }}" data-k="cover" placeholder="Poster URL" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<input value="{{ f.watch }}" onInput="{{ onF }}" data-k="watch" placeholder="Where to watch" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<select value="{{ f.rating }}" onChange="{{ onF }}" data-k="rating" style="{{ selMvRating }}">
+<option value="">Overall ranking</option>
+<sc-for list="{{ mvRatingOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<div style="display:flex;gap:4px;background:var(--s2);border-radius:999px;padding:4px">
+<button onClick="{{ setOut }}" style="{{ outStyle }}">Already out</button>
+<button onClick="{{ setUnreleased }}" style="{{ unreleasedStyle }}">Not out yet</button>
+</div>
+<input type="date" value="{{ f.release }}" onInput="{{ onF }}" data-k="release" style="box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;color:var(--ink);padding:12px 14px;font-size:13px">
+<div style="font-size:11px;color:var(--dim);line-height:1.45;margin-top:-2px">{{ releaseHint }}</div>
+<div style="display:flex;gap:8px">
+<select value="{{ f.spice }}" onChange="{{ onF }}" data-k="spice" style="{{ selSpice }}">
+<option value="">Spice level</option>
+<sc-for list="{{ spiceOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<select value="{{ f.swoon }}" onChange="{{ onF }}" data-k="swoon" style="{{ selSwoon }}">
+<option value="">Swoon factor</option>
+<sc-for list="{{ swoonOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+</div>
+<textarea value="{{ f.vibe }}" onInput="{{ onF }}" data-k="vibe" placeholder="The vibe, in a line" style="box-sizing:border-box;min-height:74px;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:14px;color:var(--ink);padding:12px;font-size:12.5px;line-height:1.5;resize:vertical"></textarea>
+<button onClick="{{ saveMovie }}" style="border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:13px 0;font-size:13px;font-weight:700;cursor:pointer;margin-top:6px">Add it</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ mExport }}" hint-placeholder-val="{{ false }}">
+<div>
+<select value="{{ target }}" onChange="{{ onTarget }}" style="width:100%;background:var(--s1);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;font-weight:600;cursor:pointer">
+<sc-for list="{{ targetOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+</select>
+<div style="font-size:11.5px;color:var(--dim);margin:11px 0 10px;line-height:1.5">{{ exportSummary }}</div>
+<div style="display:flex;gap:7px;margin-bottom:11px">
+<button onClick="{{ selectAll }}" style="border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer">{{ selectLabel }}</button>
+<button onClick="{{ toggleShowAll }}" style="border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--dim);padding:7px 12px;font-size:11px;font-weight:600;cursor:pointer">{{ showAllLabel }}</button>
+</div>
+<div style="border:1px solid var(--line);border-radius:16px;overflow:hidden">
+<sc-for list="{{ exportList }}" as="r" hint-placeholder-count="5">
+<button onClick="{{ onPick }}" data-id="{{ r.id }}" style="{{ r.style }}">
+<span style="{{ r.boxStyle }}">{{ r.check }}</span>
+<span style="flex:1;min-width:0;text-align:left">
+<span style="display:block;font-size:12.5px;font-weight:600;line-height:1.3">{{ r.title }}</span>
+<span style="display:block;font-size:10.5px;color:var(--dim);margin-top:2px">{{ r.note }}</span>
+</span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{ exportEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12.5px;color:var(--dim);padding:16px 2px;line-height:1.5">Nothing new here — this tab matches your last import.</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+<button onClick="{{ doCopy }}" style="border:0;border-radius:999px;background:var(--acc);color:var(--accInk);padding:13px 0;font-size:13px;font-weight:700;cursor:pointer">{{ copyLabel }}</button>
+<div style="display:flex;gap:8px">
+<button onClick="{{ doXlsx }}" style="flex:1;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:12px 0;font-size:12.5px;font-weight:700;cursor:pointer">Download .xlsx</button>
+<button onClick="{{ doCsv }}" style="flex:1;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);padding:12px 0;font-size:12.5px;font-weight:700;cursor:pointer">Download .csv</button>
+</div>
+</div>
+<div style="font-size:11px;color:var(--dim);margin-top:11px;line-height:1.5">Covers travel as an =IMAGE() formula, so pasting into Sheets brings the artwork with the row.</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showWelcome }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 20px)">
+<div style="flex:1;min-height:0;position:relative;border-radius:18px;overflow:hidden;background:var(--s2)">
+<image-slot id="rt-welcome-art-phone" shape="rounded" radius="18" src="welcome-cover.webp" placeholder="Drop the reading illustration here"></image-slot>
+</div>
+<div style="flex:none;padding-top:20px">
+<div style="font-family:var(--d);font-weight:600;font-size:33px;line-height:1.03;letter-spacing:-.02em">People who read</div>
+<div style="font-family:var(--d);font-style:italic;font-size:31px;line-height:1.05;color:var(--acc);margin-top:2px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:7px">live different lives.</div>
+<div style="font-size:12.5px;line-height:1.55;color:var(--dim);margin-top:13px;max-width:32ch;text-wrap:pretty">Your shelf, your TBR and your sheet, in one place.</div>
+<button onClick="{{ goLock }}" style="width:100%;border:0;border-radius:999px;background:var(--ink);color:var(--bg);padding:0;min-height:54px;font-size:14.5px;font-weight:700;cursor:pointer;margin-top:18px;font-family:var(--b)">Let's go →</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showLock }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;justify-content:center;padding:40px 28px">
+<div style="font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)">Passcode</div>
+<div style="font-family:var(--d);font-size:30px;line-height:1.05;margin-top:6px">Welcome back</div>
+<div style="display:flex;gap:11px;margin:26px 0 8px">
+<sc-for list="{{ pinDots }}" as="p" hint-placeholder-count="4"><div style="{{ p.style }}"></div></sc-for>
+</div>
+<div style="font-size:11.5px;color:var(--acc);min-height:18px">{{ pinErr }}</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px">
+<sc-for list="{{ keys }}" as="k" hint-placeholder-count="12">
+<button onClick="{{ onKey }}" data-k="{{ k.v }}" style="{{ k.style }}">{{ k.label }}</button>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:18px;right:18px;bottom:88px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 14px;font-size:12px;line-height:1.45;z-index:30;animation:rtup .2s ease-out">{{ toast }}</div>
+</sc-if>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:393,&quot;height&quot;:852}}">
+class Component extends DCLogic {
+  state = {
+    ready: false, theme: 'dark', screen: 'today',
+    books: [], tbr: [], movies: [], dnf: [], lists: null, sync: {},
+    libQ: '', libTab: 'All', libSort: 'recent',
+    tbrTier: 'All',
+    mv: { watch: 'All', rating: 'All', spice: 'All', swoon: 'All', status: 'All' }, mvQ: '',
+    gate: 'welcome', pin: '', pinErr: '', pass: '1947', passDraft: '', dayIso: '',
+    year: null, calMonth: null, calFull: true,
+    modal: null, detailId: null, f: {},
+    lk: { q: '', busy: false, res: [], i: 0, err: '' },
+    target: 'Tracker', picked: {}, showAll: false,
+    pasteText: '', toast: '', welcomeCover: ''
+  };
+
+  componentDidMount() {
+    this.boot();
+    window.addEventListener('rt-data', this.boot);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('rt-data', this.boot);
+    if (this._t) clearTimeout(this._t);
+    if (this._toast) clearTimeout(this._toast);
+  }
+
+  boot = () => {
+    const d = window.RT_DATA;
+    if (!d || this.state.ready) return;
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('rt2') || 'null'); } catch (e) {}
+    const now = new Date();
+    const base = {
+      ready: true,
+      books: (saved && saved.books) || d.books.slice(),
+      tbr: (saved && saved.tbr) || d.tbr.slice(),
+      movies: (saved && saved.movies) || d.movies.slice(),
+      dnf: (saved && saved.dnf) || d.dnf.slice(),
+      lists: d.lists,
+      theme: (saved && saved.theme) || 'dark',
+      welcomeCover: (saved && saved.welcomeCover) || '',
+      pass: saved && saved.v === 3 && saved.pass != null ? saved.pass : '1947',
+      year: String(now.getFullYear()),
+      calMonth: now.getMonth()
+    };
+    base.sync = (saved && saved.v === 3 && saved.sync) || this.seedSync(base);
+    this.setState(base, () => this.applyWelcomeCover(base.welcomeCover));
+  };
+
+  seedSync(s) {
+    const out = {};
+    ['Tracker', 'To Be Read', 'Movies', 'DNF Log'].forEach(t => {
+      this.poolOf(t, s).forEach(r => { out[r.id] = this.hash(t, r); });
+    });
+    return out;
+  }
+
+  save() {
+    if (this._t) clearTimeout(this._t);
+    this._t = setTimeout(() => {
+      const s = this.state;
+      try {
+        localStorage.setItem('rt2', JSON.stringify({
+          v: 3, theme: s.theme, welcomeCover: s.welcomeCover, pass: s.pass, books: s.books, tbr: s.tbr, movies: s.movies, dnf: s.dnf, sync: s.sync
+        }));
+      } catch (e) {}
+    }, 500);
+  }
+  put(patch) { this.setState(patch, () => this.save()); }
+  say(msg) {
+    this.setState({ toast: msg });
+    if (this._toast) clearTimeout(this._toast);
+    this._toast = setTimeout(() => this.setState({ toast: '' }), 3600);
+  }
+
+  today() { return new Date().toISOString().slice(0, 10); }
+  fmt(iso) {
+    if (!iso || iso.length < 10) return '';
+    const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const p = iso.slice(0, 10).split('-');
+    return M[+p[1] - 1] + ' ' + (+p[2]) + ', ' + p[0];
+  }
+  sheetDate(iso) {
+    if (!iso || iso.length < 10) return '';
+    const p = iso.slice(0, 10).split('-');
+    return (+p[1]) + '/' + (+p[2]) + '/' + p[0];
+  }
+  isoFromSheet(v) {
+    if (!v) return '';
+    const s = String(v).trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+    const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+    if (m) {
+      const y = m[3].length === 2 ? '20' + m[3] : m[3];
+      return y + '-' + String(+m[1]).padStart(2, '0') + '-' + String(+m[2]).padStart(2, '0');
+    }
+    const d = new Date(s);
+    return isNaN(d) ? '' : d.toISOString().slice(0, 10);
+  }
+  num(v) { const n = parseFloat(v); return isFinite(n) ? n : null; }
+  stars(r) { return (String(r || '').match(/✨|💫|🌟|⭐|🌠|★/g) || []).length; }
+  days(a, b) {
+    if (!a || !b || a.length < 10 || b.length < 10) return null;
+    return Math.round((Date.parse(b + 'T00:00:00') - Date.parse(a + 'T00:00:00')) / 86400000);
+  }
+  key(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  when(b) { return b.finish || b.start || ''; }
+
+  pill(on) {
+    return 'flex:none;white-space:nowrap;cursor:pointer;border-radius:999px;padding:0 16px;min-height:44px;font-size:11.5px;font-weight:600;'
+      + (on ? 'background:var(--ink);color:var(--bg);border:1px solid var(--ink);'
+            : 'background:transparent;color:var(--dim);border:1px solid var(--line);');
+  }
+  seg(on) {
+    return 'flex:1;cursor:pointer;border:0;border-radius:999px;padding:9px 0;font-size:12px;font-weight:700;'
+      + (on ? 'background:var(--acc);color:var(--accInk);' : 'background:transparent;color:var(--dim);');
+  }
+  sel(empty, extra) {
+    return (extra || 'width:100%;') + 'box-sizing:border-box;background:var(--s1);border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:12px;'
+      + 'padding:12px 14px;font-size:13px;cursor:pointer;color:' + (empty ? 'var(--dim)' : 'var(--ink)') + ';';
+  }
+  hiRes(url) {
+    if (!url) return url;
+    let u = url.replace(/^http:\/\//, 'https://');
+    if (/covers\.openlibrary\.org/.test(u)) u = u.replace(/-(S|M)\.jpg/i, '-L.jpg');
+    if (/books\.google\./.test(u)) u = u.replace(/([?&])zoom=\d/, '$1zoom=3').replace(/&edge=curl/, '');
+    if (/images-amazon|media-amazon/.test(u)) u = u.replace(/\._[A-Z0-9_,]+_\./, '.');
+    return u;
+  }
+  bg(url) {
+    return url ? 'width:100%;height:100%;background-image:url("' + this.hiRes(url) + '");background-size:cover;background-position:center' : 'display:none';
+  }
+
+  isOut(m) { return m.released === true || (!!m.release && m.release <= this.today()) || !m.release; }
+  tabStyle(on) {
+    return 'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border:0;border-radius:16px;'
+      + 'cursor:pointer;padding:9px 0 7px;min-height:56px;color:' + (on ? 'var(--acc)' : 'var(--dim)')
+      + ';background:' + (on ? 'var(--s2)' : 'transparent') + ';';
+  }
+  tabLabel(on) {
+    return on ? 'font-size:9px;font-weight:700;letter-spacing:.05em;margin-top:5px;white-space:nowrap' : 'display:none';
+  }
+
+  onNav = e => { this.setState({ screen: e.currentTarget.dataset.v, modal: null }); };
+  goSettings = () => this.setState({ screen: 'settings', modal: null });
+  setDark = () => this.put({ theme: 'dark' });
+  setLight = () => this.put({ theme: 'light' });
+  applyWelcomeCover(src) {
+    const slot = document.getElementById('rt-welcome-art-phone');
+    if (!slot) return;
+    if (!this._defaultWelcomeCover) this._defaultWelcomeCover = slot.getAttribute('src') || '';
+    slot.setAttribute('src', src || this._defaultWelcomeCover);
+  }
+  onWelcomeCover = e => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type || file.type.indexOf('image/') !== 0) { this.say('Please choose an image file.'); return; }
+    const reader = new FileReader();
+    reader.onerror = () => this.say('That image could not be opened. Try another one.');
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => this.say('That image format could not be used. Try a JPG or PNG.');
+      img.onload = () => {
+        const maxSide = 1600;
+        const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        let data = '';
+        try { data = canvas.toDataURL('image/jpeg', .84); } catch (err) {}
+        if (!data) { this.say('That image could not be saved. Try another one.'); return; }
+        this.applyWelcomeCover(data);
+        this.put({ welcomeCover: data });
+        this.say('Welcome cover updated.');
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  resetWelcomeCover = () => {
+    this.applyWelcomeCover('');
+    this.put({ welcomeCover: '' });
+    this.say('The original welcome cover is back.');
+  };
+  closeModal = () => this.setState({ modal: null, f: {}, lk: { q: '', busy: false, res: [], i: 0, err: '' } });
+
+  onLibQ = e => this.setState({ libQ: e.target.value });
+  onLibTab = e => this.setState({ libTab: e.currentTarget.dataset.v });
+  onLibSort = e => this.setState({ libSort: e.target.value });
+  onTbrTier = e => this.setState({ tbrTier: e.target.value });
+  onMvQ = e => this.setState({ mvQ: e.target.value });
+  onMvFilter = e => {
+    const mv = Object.assign({}, this.state.mv);
+    mv[e.currentTarget.dataset.k] = e.target.value;
+    this.setState({ mv });
+  };
+  clearMv = () => this.setState({ mv: { watch: 'All', rating: 'All', spice: 'All', swoon: 'All', status: 'All' }, mvQ: '' });
+  onYear = e => this.setState({ year: e.target.value });
+  prevMonth = () => {
+    let m = this.state.calMonth - 1, y = +this.state.year;
+    if (m < 0) { m = 11; y -= 1; }
+    this.setState({ calMonth: m, year: String(y) });
+  };
+  nextMonth = () => {
+    let m = this.state.calMonth + 1, y = +this.state.year;
+    if (m > 11) { m = 0; y += 1; }
+    this.setState({ calMonth: m, year: String(y) });
+  };
+  onCalDay = e => {
+    const iso = e.currentTarget.dataset.iso;
+    if (iso) this.setState({ modal: 'day', dayIso: iso, f: {} });
+  };
+  setCompact = () => this.setState({ calFull: false });
+  setFull = () => this.setState({ calFull: true });
+  onF = e => {
+    const f = Object.assign({}, this.state.f);
+    f[e.currentTarget.dataset.k] = e.target.value;
+    this.setState({ f });
+  };
+  onPaste = e => this.setState({ pasteText: e.target.value });
+
+  onDetail = e => this.setState({ modal: 'detail', detailId: e.currentTarget.dataset.id, f: {} });
+  onTbrDetail = e => this.setState({ modal: 'tbrDetail', detailId: e.currentTarget.dataset.id, f: {} });
+  onTbrOrder = e => {
+    const v = e.target.value, id = this.state.detailId;
+    this.put({ tbr: this.state.tbr.map(t => t.id === id ? Object.assign({}, t, { order: v === 'Unsorted' ? '' : v }) : t) });
+    this.say('Moved to ' + v + '. It will go out with your next export.');
+  };
+  copyTbrRow = () => {
+    const t = this.state.tbr.find(x => x.id === this.state.detailId);
+    if (!t) return;
+    const text = this.rowFor('To Be Read', t).map(v => this.cell(v)).join('\t');
+    const done = () => { this.markSynced('To Be Read', [t]); this.say('Row copied with its cover formula.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+    else this.fallbackCopy(text, done);
+  };
+  goLock = () => this.setState({ gate: this.state.pass ? 'lock' : 'in', pin: '', pinErr: '' });
+  onKey = e => {
+    const k = e.currentTarget.dataset.k;
+    if (!k) return;
+    if (k === 'del') { this.setState({ pin: this.state.pin.slice(0, -1), pinErr: '' }); return; }
+    const pin = (this.state.pin + k).slice(0, 4);
+    if (pin.length < 4) { this.setState({ pin, pinErr: '' }); return; }
+    if (pin === this.state.pass) this.setState({ gate: 'in', pin: '', pinErr: '' });
+    else this.setState({ pin: '', pinErr: 'That is not it. Try again.' });
+  };
+  onPassDraft = e => this.setState({ passDraft: e.target.value.replace(/\D/g, '').slice(0, 4) });
+  savePass = () => {
+    const p = this.state.passDraft;
+    if (p.length !== 4) { this.say('A passcode is four digits.'); return; }
+    this.put({ pass: p, passDraft: '' });
+    this.say('Passcode saved.');
+  };
+  clearPass = () => { this.put({ pass: '', passDraft: '' }); this.say('Passcode off — the app opens straight up.'); };
+  markReleased = e => {
+    const id = e.currentTarget.dataset.id;
+    this.put({ movies: this.state.movies.map(m => m.id === id ? Object.assign({}, m, { released: true }) : m) });
+    this.say('Marked as out.');
+  };
+  setOut = () => { const f = Object.assign({}, this.state.f, { released: true }); this.setState({ f }); };
+  setUnreleased = () => { const f = Object.assign({}, this.state.f, { released: false }); this.setState({ f }); };
+  openClose = () => this.setState({ modal: 'close', f: {} });
+  onCloseOut = e => {
+    const b = this.state.books.find(x => x.id === e.currentTarget.dataset.id);
+    if (!b) return;
+    this.setState({
+      modal: 'close',
+      f: { id: b.id, title: b.title, author: b.author, cover: b.cover, kind: 'Finished', date: this.today(), rating: '', feel: '', reason: '', notes: '' }
+    });
+  };
+  setFinished = () => { const f = Object.assign({}, this.state.f, { kind: 'Finished' }); this.setState({ f }); };
+  setDnf = () => { const f = Object.assign({}, this.state.f, { kind: 'DNF' }); this.setState({ f }); };
+  saveClose = () => {
+    const f = this.state.f;
+    const books = this.state.books.map(b => {
+      if (b.id !== f.id) return b;
+      return Object.assign({}, b, {
+        status: f.kind,
+        finish: f.date,
+        rating: f.kind === 'Finished' ? (f.rating || b.rating) : b.rating,
+        feel: f.kind === 'Finished' ? (f.feel || b.feel) : b.feel,
+        notes: f.notes || b.notes
+      });
+    });
+    const patch = { books, modal: null, f: {} };
+    if (f.kind === 'DNF') {
+      patch.dnf = this.state.dnf.concat([{
+        id: 'd' + Date.now(), date: f.date, title: f.title,
+        reason: f.reason || 'Not for me', thoughts: f.notes || ''
+      }]);
+    }
+    this.put(patch);
+    this.say(f.kind === 'Finished' ? 'Logged as finished. Ready to take out.' : 'Logged as DNF with your reason.');
+  };
+  savePage = () => {
+    const id = this.state.detailId, page = this.num(this.state.f.page);
+    if (page == null) return;
+    this.put({ books: this.state.books.map(b => b.id === id ? Object.assign({}, b, { page: page }) : b) });
+    this.say('Page updated.');
+  };
+
+  openStart = () => this.setState({ modal: 'start', f: { date: this.today(), format: 'Physical Book', genre: '' }, lk: { q: '', busy: false, res: [], i: 0, err: '' } });
+  openTbrAdd = () => this.setState({ modal: 'tbrAdd', f: { order: '' }, lk: { q: '', busy: false, res: [], i: 0, err: '' } });
+  openMovieAdd = () => this.setState({ modal: 'movie', f: { rating: '', spice: '', swoon: '', released: true, release: '' } });
+  openExport = () => {
+    const s = this.state;
+    const picked = {};
+    this.pending(s.target).forEach(r => { picked[r.id] = true; });
+    this.setState({ modal: 'export', picked, showAll: false });
+  };
+  onTarget = e => {
+    const target = e.target.value, picked = {};
+    this.pending(target).forEach(r => { picked[r.id] = true; });
+    this.setState({ target, picked, showAll: false });
+  };
+  onPick = e => {
+    const id = e.currentTarget.dataset.id;
+    const picked = Object.assign({}, this.state.picked);
+    if (picked[id]) delete picked[id]; else picked[id] = true;
+    this.setState({ picked });
+  };
+  toggleShowAll = () => this.setState({ showAll: !this.state.showAll });
+  selectAll = () => {
+    const list = this.exportVisible();
+    const all = list.every(r => this.state.picked[r.id]);
+    const picked = {};
+    if (!all) list.forEach(r => { picked[r.id] = true; });
+    this.setState({ picked });
+  };
+
+  onStartFromTbr = e => {
+    if (e.stopPropagation) e.stopPropagation();
+    const t = this.state.tbr.find(x => x.id === e.currentTarget.dataset.id);
+    if (!t) return;
+    this.setState({
+      modal: 'start',
+      f: { title: t.title, author: t.author, cover: t.cover, pages: t.pages, summary: t.notes, fromTbr: t.id, date: this.today(), format: 'Physical Book', genre: '' },
+      lk: { q: '', busy: false, res: [], i: 0, err: '' }
+    });
+  };
+
+  onLq = e => { const lk = Object.assign({}, this.state.lk, { q: e.target.value }); this.setState({ lk }); };
+  doLookup = () => {
+    const q = (this.state.lk.q || '').trim();
+    if (!q) return;
+    this.setState({ lk: Object.assign({}, this.state.lk, { busy: true, err: '', res: [], i: 0 }) });
+    const url = 'https://openlibrary.org/search.json?limit=8&fields=title,author_name,cover_i,number_of_pages_median,first_sentence,key&q=' + encodeURIComponent(q);
+    fetch(url).then(r => r.json()).then(j => {
+      const res = (j.docs || []).map(d => ({
+        title: d.title,
+        author: (d.author_name || []).join(', '),
+        cover: d.cover_i ? 'https://covers.openlibrary.org/b/id/' + d.cover_i + '-L.jpg' : '',
+        pages: d.number_of_pages_median || '',
+        summary: (d.first_sentence && (d.first_sentence.value || d.first_sentence[0])) || '',
+        work: d.key || ''
+      }));
+      if (!res.length) this.setState({ lk: Object.assign({}, this.state.lk, { busy: false, err: 'Nothing came back. Fill it in below instead.' }) });
+      else {
+        this.setState({ lk: Object.assign({}, this.state.lk, { busy: false, res: res, i: 0 }) });
+        this.blurb(0, res);
+      }
+    }).catch(() => {
+      this.setState({ lk: Object.assign({}, this.state.lk, { busy: false, err: 'Open Library did not answer. Fill it in below instead.' }) });
+    });
+  };
+  blurb(i, res) {
+    const c = res[i];
+    if (!c || !c.work || c._got) return;
+    fetch('https://openlibrary.org' + c.work + '.json').then(r => r.json()).then(j => {
+      const d = j.description;
+      const text = typeof d === 'string' ? d : (d && d.value) || '';
+      const arr = this.state.lk.res.slice();
+      if (arr[i]) arr[i] = Object.assign({}, arr[i], { summary: text || arr[i].summary, _got: true });
+      this.setState({ lk: Object.assign({}, this.state.lk, { res: arr }) });
+    }).catch(() => {});
+  }
+  rejectCand = () => {
+    const lk = this.state.lk;
+    const i = lk.i + 1;
+    if (i >= lk.res.length) { this.setState({ lk: Object.assign({}, lk, { res: [], i: 0, err: 'That was the last match. Try different words or fill it in below.' }) }); return; }
+    this.setState({ lk: Object.assign({}, lk, { i }) });
+    this.blurb(i, lk.res);
+  };
+  acceptCand = () => {
+    const lk = this.state.lk, c = lk.res[lk.i];
+    if (!c) return;
+    const f = Object.assign({}, this.state.f, {
+      title: c.title, author: c.author, cover: c.cover,
+      pages: c.pages ? String(c.pages) : '', summary: c.summary || ''
+    });
+    this.setState({ f, lk: Object.assign({}, lk, { res: [], i: 0 }) });
+    this.say('Pulled in. Check it before you save.');
+  };
+  saveLookup = () => {
+    const s = this.state, f = s.f;
+    if (!f.title) { this.say('It needs a title at least.'); return; }
+    if (s.modal === 'start') {
+      const book = {
+        id: 'n' + Date.now(), title: f.title, author: f.author || '', cover: f.cover || '',
+        genre: f.genre || '', status: 'Started', start: f.date || this.today(), finish: '',
+        format: f.format || 'Physical Book', page: null, pages: f.pages || '', rating: '',
+        favChar: '', series: '', feel: '', summary: f.summary || '', notes: ''
+      };
+      const patch = { books: [book].concat(s.books), modal: null, f: {} };
+      if (f.fromTbr) patch.tbr = s.tbr.filter(t => t.id !== f.fromTbr);
+      this.put(patch);
+      this.say('Started. It will go out with your next export.');
+    } else {
+      const t = {
+        id: 'n' + Date.now(), title: f.title, author: f.author || '', cover: f.cover || '',
+        price: f.price || '', bought: false, order: f.order || '', info: f.info || '',
+        pages: f.pages || '', notes: f.summary || ''
+      };
+      this.put({ tbr: [t].concat(s.tbr), modal: null, f: {} });
+      this.say('On the TBR.');
+    }
+  };
+  saveMovie = () => {
+    const f = this.state.f;
+    if (!f.title) { this.say('It needs a title at least.'); return; }
+    const m = {
+      id: 'n' + Date.now(), title: f.title, cover: f.cover || '', watch: f.watch || '',
+      rating: f.rating || '', spice: f.spice || '-', swoon: f.swoon || '-', vibe: f.vibe || '',
+      release: f.release || '', released: f.released !== false || !f.release
+    };
+    this.put({ movies: [m].concat(this.state.movies), modal: null, f: {} });
+    this.say('Added to the movie list.');
+  };
+
+  cols(t) {
+    if (t === 'Tracker') return ['Book Title', 'Cover', 'Author', 'Genre', 'Status', 'Start Date', 'Finish Date', 'Format', 'Current Page', 'Page Length', 'Rating', 'Fav Character', 'Series', 'How It Felt', 'Summary', 'My Notes'];
+    if (t === 'To Be Read') return ['Book Title', 'Cover', 'Author', 'Price', 'Bought', 'Reading Order', 'Info', 'Notes'];
+    if (t === 'Movies') return ['Name', 'Image', 'Where to Watch', 'Overall Ranking', 'Spice Level', 'Swoon Factor', 'Release Date', 'Vibe'];
+    return ['Date', 'Book Title', 'Reason', 'Thoughts'];
+  }
+  imgF(url) { return url ? '=IMAGE("' + url + '")' : ''; }
+  rowFor(t, r) {
+    if (t === 'Tracker') return [r.title, this.imgF(r.cover), r.author, r.genre, r.status,
+      this.sheetDate(r.start), this.sheetDate(r.finish), r.format, r.page == null ? '' : r.page,
+      r.pages, r.rating, r.favChar, r.series, r.feel, r.summary, r.notes];
+    if (t === 'To Be Read') return [r.title, this.imgF(r.cover), r.author, r.price, r.bought ? 'Yes' : 'No', r.order, r.info, r.notes];
+    if (t === 'Movies') return [r.title, this.imgF(r.cover), r.watch, r.rating, r.spice, r.swoon, this.sheetDate(r.release), r.vibe];
+    return [this.sheetDate(r.date), r.title, r.reason, r.thoughts];
+  }
+  poolOf(t, s) {
+    s = s || this.state;
+    if (t === 'Tracker') return s.books;
+    if (t === 'To Be Read') return s.tbr;
+    if (t === 'Movies') return s.movies;
+    return s.dnf;
+  }
+  hash(t, r) { return this.rowFor(t, r).map(v => String(v == null ? '' : v)).join('\u0001'); }
+  stateOf(t, r) {
+    const h = this.state.sync[r.id];
+    if (h == null) return 'new';
+    return h === this.hash(t, r) ? 'synced' : 'changed';
+  }
+  pending(t) { return this.poolOf(t).filter(r => this.stateOf(t, r) !== 'synced'); }
+  pendingAll() {
+    let n = 0;
+    ['Tracker', 'To Be Read', 'Movies', 'DNF Log'].forEach(t => { n += this.pending(t).length; });
+    return n;
+  }
+  exportVisible() {
+    const t = this.state.target;
+    const all = this.poolOf(t);
+    return this.state.showAll ? all : all.filter(r => this.stateOf(t, r) !== 'synced');
+  }
+  exportRows() {
+    const t = this.state.target;
+    return this.poolOf(t).filter(r => this.state.picked[r.id]);
+  }
+  cell(v) { return String(v == null ? '' : v).replace(/[\r\n\t]+/g, ' ').trim(); }
+  markSynced(t, rows) {
+    const sync = Object.assign({}, this.state.sync);
+    rows.forEach(r => { sync[r.id] = this.hash(t, r); });
+    this.put({ sync });
+  }
+  doCopy = () => {
+    const t = this.state.target, rows = this.exportRows();
+    if (!rows.length) { this.say('Pick at least one row.'); return; }
+    const text = rows.map(r => this.rowFor(t, r).map(v => this.cell(v)).join('\t')).join('\n');
+    const done = () => { this.markSynced(t, rows); this.say(rows.length + ' row' + (rows.length > 1 ? 's' : '') + ' copied — paste into the first empty row of ' + t + '.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+    } else this.fallbackCopy(text, done);
+  };
+  fallbackCopy(text, done) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta); done();
+    } catch (e) { this.say('Copy blocked here — use the download instead.'); }
+  }
+  copyOne = () => {
+    const b = this.state.books.find(x => x.id === this.state.detailId);
+    if (!b) return;
+    const text = this.rowFor('Tracker', b).map(v => this.cell(v)).join('\t');
+    const done = () => { this.markSynced('Tracker', [b]); this.say('Row copied with its cover formula.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => this.fallbackCopy(text, done));
+    else this.fallbackCopy(text, done);
+  };
+  download(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  aoa() {
+    const t = this.state.target, rows = this.exportRows();
+    return { t, rows, data: [this.cols(t)].concat(rows.map(r => this.rowFor(t, r))) };
+  }
+  doXlsx = () => {
+    const { t, rows, data } = this.aoa();
+    if (!rows.length) { this.say('Pick at least one row.'); return; }
+    if (!window.XLSX) { this.say('Spreadsheet writer did not load — use .csv.'); return; }
+    const wb = window.XLSX.utils.book_new();
+    window.XLSX.utils.book_append_sheet(wb, window.XLSX.utils.aoa_to_sheet(data), t.slice(0, 28));
+    const out = window.XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    this.download(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), t.replace(/\s+/g, '-').toLowerCase() + '-' + this.today() + '.xlsx');
+    this.markSynced(t, rows);
+    this.say('Downloaded. In Sheets: File → Import → append to ' + t + '.');
+  };
+  doCsv = () => {
+    const { t, rows, data } = this.aoa();
+    if (!rows.length) { this.say('Pick at least one row.'); return; }
+    const csv = data.map(r => r.map(v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+    this.download(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' }), t.replace(/\s+/g, '-').toLowerCase() + '-' + this.today() + '.csv');
+    this.markSynced(t, rows);
+    this.say('CSV downloaded — import it as an append into ' + t + '.');
+  };
+
+  splitCsv(line) {
+    const out = []; let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (q) {
+        if (c === '"' && line[i + 1] === '"') { cur += '"'; i++; }
+        else if (c === '"') q = false;
+        else cur += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { out.push(cur); cur = ''; }
+      else cur += c;
+    }
+    out.push(cur);
+    return out;
+  }
+  parseText(text) {
+    const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter(l => l.trim());
+    if (!lines.length) return [];
+    const tab = lines[0].indexOf('\t') > -1;
+    return lines.map(l => tab ? l.split('\t').map(c => c.trim()) : this.splitCsv(l).map(c => c.trim()));
+  }
+  detect(rows) {
+    const head = rows[0].join(' ').toLowerCase();
+    if (head.indexOf('reading order') > -1 || head.indexOf('price') > -1) return 'To Be Read';
+    if (head.indexOf('where to watch') > -1 || head.indexOf('swoon') > -1) return 'Movies';
+    if (head.indexOf('reason') > -1 && head.indexOf('thoughts') > -1) return 'DNF Log';
+    if (head.indexOf('status') > -1 || head.indexOf('finish date') > -1 || head.indexOf('book title') > -1) return 'Tracker';
+    return null;
+  }
+  unImg(v) {
+    const s = String(v == null ? '' : v);
+    const m = s.match(/=IMAGE\("([^"]+)"/i);
+    return m ? m[1] : (s.indexOf('http') === 0 ? s : '');
+  }
+  colMap(head) {
+    const map = {};
+    head.forEach((h, i) => { map[this.key(h)] = i; });
+    return (name, alt) => {
+      const i = map[this.key(name)];
+      if (i != null) return i;
+      const j = alt == null ? null : map[this.key(alt)];
+      return j == null ? -1 : j;
+    };
+  }
+  absorb(target, rows) {
+    const head = rows[0], body = rows.slice(1).filter(r => r.join('').trim());
+    const at = this.colMap(head);
+    const s = this.state;
+    const sync = Object.assign({}, s.sync);
+    let added = 0, updated = 0;
+    const g = (r, name, alt) => { const i = at(name, alt); return i < 0 ? '' : (r[i] == null ? '' : String(r[i]).trim()); };
+
+    if (target === 'Tracker') {
+      const books = s.books.slice();
+      body.forEach(r => {
+        const title = g(r, 'Book Title', 'Title');
+        if (!title) return;
+        const rec = {
+          title: title, author: g(r, 'Author'), cover: this.unImg(g(r, 'Cover', 'Image')),
+          genre: g(r, 'Genre'), status: g(r, 'Status') || 'Finished',
+          start: this.isoFromSheet(g(r, 'Start Date')), finish: this.isoFromSheet(g(r, 'Finish Date')),
+          format: g(r, 'Format'), page: this.num(g(r, 'Current Page')), pages: g(r, 'Page Length', 'Pages'),
+          rating: g(r, 'Rating'), favChar: g(r, 'Fav Character'), series: g(r, 'Series'),
+          feel: g(r, 'How It Felt', 'Feel'), summary: g(r, 'Summary'), notes: g(r, 'My Notes', 'Notes')
+        };
+        const i = books.findIndex(b => this.key(b.title) === this.key(title));
+        if (i > -1) { books[i] = Object.assign({}, books[i], rec); sync[books[i].id] = this.hash('Tracker', books[i]); updated++; }
+        else {
+          const nb = Object.assign({ id: 'i' + Date.now() + '-' + added }, rec);
+          books.push(nb); sync[nb.id] = this.hash('Tracker', nb); added++;
+        }
+      });
+      this.put({ books, sync });
+    } else if (target === 'To Be Read') {
+      const tbr = s.tbr.slice();
+      body.forEach(r => {
+        const title = g(r, 'Book Title', 'Title');
+        if (!title) return;
+        const rec = {
+          title: title, author: g(r, 'Author'), cover: this.unImg(g(r, 'Cover', 'Image')),
+          price: g(r, 'Price'), bought: /yes|true/i.test(g(r, 'Bought')), order: g(r, 'Reading Order', 'Order'),
+          info: g(r, 'Info'), pages: g(r, 'Page Length', 'Pages'), notes: g(r, 'Notes')
+        };
+        const i = tbr.findIndex(t => this.key(t.title) === this.key(title));
+        if (i > -1) { tbr[i] = Object.assign({}, tbr[i], rec); sync[tbr[i].id] = this.hash('To Be Read', tbr[i]); updated++; }
+        else { const nt = Object.assign({ id: 'i' + Date.now() + '-' + added }, rec); tbr.push(nt); sync[nt.id] = this.hash('To Be Read', nt); added++; }
+      });
+      this.put({ tbr, sync });
+    } else if (target === 'Movies') {
+      const movies = s.movies.slice();
+      body.forEach(r => {
+        const title = g(r, 'Name', 'Title');
+        if (!title) return;
+        const rec = {
+          title: title, cover: this.unImg(g(r, 'Image', 'Cover')), watch: g(r, 'Where to Watch'),
+          rating: g(r, 'Overall Ranking', 'Rating'), spice: g(r, 'Spice Level') || '-',
+          swoon: g(r, 'Swoon Factor') || '-', release: this.isoFromSheet(g(r, 'Release Date')), vibe: g(r, 'Vibe')
+        };
+        const i = movies.findIndex(m => this.key(m.title) === this.key(title));
+        if (i > -1) { movies[i] = Object.assign({}, movies[i], rec); sync[movies[i].id] = this.hash('Movies', movies[i]); updated++; }
+        else { const nm = Object.assign({ id: 'i' + Date.now() + '-' + added }, rec); movies.push(nm); sync[nm.id] = this.hash('Movies', nm); added++; }
+      });
+      this.put({ movies, sync });
+    } else {
+      const dnf = s.dnf.slice();
+      body.forEach(r => {
+        const title = g(r, 'Book Title', 'Title');
+        if (!title) return;
+        const rec = { date: this.isoFromSheet(g(r, 'Date')), title: title, reason: g(r, 'Reason'), thoughts: g(r, 'Thoughts') };
+        const i = dnf.findIndex(d => this.key(d.title) === this.key(title));
+        if (i > -1) { dnf[i] = Object.assign({}, dnf[i], rec); sync[dnf[i].id] = this.hash('DNF Log', dnf[i]); updated++; }
+        else { const nd = Object.assign({ id: 'i' + Date.now() + '-' + added }, rec); dnf.push(nd); sync[nd.id] = this.hash('DNF Log', nd); added++; }
+      });
+      this.put({ dnf, sync });
+    }
+    return { added, updated, target };
+  }
+  report(results) {
+    const good = results.filter(r => r);
+    if (!good.length) { this.say('I could not tell what those columns were. Keep the header row in.'); return; }
+    this.say(good.map(r => r.target + ': ' + r.updated + ' refreshed, ' + r.added + ' new').join(' · '));
+  }
+  onFile = e => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const name = file.name.toLowerCase();
+    if (/\.(csv|tsv|txt)$/.test(name)) {
+      const fr = new FileReader();
+      fr.onload = () => {
+        const rows = this.parseText(String(fr.result || ''));
+        const t = rows.length ? this.detect(rows) : null;
+        this.report([t ? this.absorb(t, rows) : null]);
+      };
+      fr.readAsText(file);
+    } else {
+      if (!window.XLSX) { this.say('Spreadsheet reader did not load — export the tab as CSV instead.'); return; }
+      const fr = new FileReader();
+      fr.onload = () => {
+        try {
+          const wb = window.XLSX.read(new Uint8Array(fr.result), { type: 'array' });
+          const out = wb.SheetNames.map(n => {
+            const rows = window.XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: false, defval: '' })
+              .map(r => r.map(c => String(c == null ? '' : c).trim()))
+              .filter(r => r.join('').trim());
+            if (!rows.length) return null;
+            const t = this.detect(rows);
+            return t ? this.absorb(t, rows) : null;
+          });
+          this.report(out);
+        } catch (err) { this.say('That file would not open. Try exporting it as CSV.'); }
+      };
+      fr.readAsArrayBuffer(file);
+    }
+    e.target.value = '';
+  };
+  doPasteImport = () => {
+    const rows = this.parseText(this.state.pasteText || '');
+    if (!rows.length) { this.say('Nothing pasted yet.'); return; }
+    const t = this.detect(rows);
+    this.report([t ? this.absorb(t, rows) : null]);
+    if (t) this.setState({ pasteText: '' });
+  };
+  resetAll = () => {
+    try { localStorage.removeItem('rt2'); } catch (e) {}
+    const d = window.RT_DATA;
+    const base = { books: d.books.slice(), tbr: d.tbr.slice(), movies: d.movies.slice(), dnf: d.dnf.slice(), lists: d.lists };
+    this.put(Object.assign({}, base, { sync: this.seedSync(base), modal: null }));
+    this.say('Back to the file as loaded.');
+  };
+
+  renderVals() {
+    const s = this.state;
+    const L = s.lists || { rating: [], feel: [], format: [], genre: [], order: [], dnfReason: [] };
+    const M = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const uniq = a => a.filter((v, i) => v && a.indexOf(v) === i);
+
+    const reading = s.books.filter(b => b.status === 'Started').map(b => {
+      const pages = this.num(b.pages), page = this.num(b.page);
+      const pct = pages && page ? Math.min(100, Math.round(page / pages * 100)) : 0;
+      return {
+        id: b.id, title: b.title, author: b.author, cover: b.cover, hasCover: !!b.cover, imgStyle: this.bg(b.cover),
+        pageLabel: page && pages ? 'p. ' + page + ' of ' + pages : (pages ? String(pages) + ' pages' : 'No page count'),
+        pctLabel: pct ? pct + '%' : 'Started ' + this.fmt(b.start),
+        barStyle: 'display:block;height:100%;border-radius:999px;background:var(--acc);width:' + (pct || 2) + '%'
+      };
+    });
+
+    const byRecent = (a, b) => (this.when(b) || '').localeCompare(this.when(a) || '');
+    const recent = s.books.filter(b => b.status === 'Finished' && this.when(b)).sort(byRecent).slice(0, 10)
+      .map(b => ({ id: b.id, title: b.title, cover: b.cover, hasCover: !!b.cover, imgStyle: this.bg(b.cover), dateLabel: this.fmt(b.finish) }));
+
+    const libTabDefs = [['All', 'All'], ['Reading', 'Started'], ['Finished', 'Finished'], ['DNF', 'DNF']];
+    const q = s.libQ.trim().toLowerCase();
+    let libList = s.books.filter(b => {
+      if (s.libTab !== 'All' && b.status !== s.libTab) return false;
+      if (!q) return true;
+      return (b.title + ' ' + b.author + ' ' + (b.series || '') + ' ' + (b.genre || '')).toLowerCase().indexOf(q) > -1;
+    });
+    if (s.libSort === 'title') libList = libList.slice().sort((a, b) => a.title.localeCompare(b.title));
+    else if (s.libSort === 'rating') libList = libList.slice().sort((a, b) => this.stars(b.rating) - this.stars(a.rating));
+    else libList = libList.slice().sort(byRecent);
+
+    const dnfBooks = s.books.filter(b => b.status === 'DNF');
+    const dnfList = dnfBooks.concat(s.dnf.filter(d => !dnfBooks.some(b => this.key(b.title) === this.key(d.title))).map(d => ({
+      id: d.id, title: d.title, author: '', cover: '', finish: d.date, _log: d
+    }))).sort((a, b) => (this.when(b) || (b._log && b._log.date) || '').localeCompare(this.when(a) || (a._log && a._log.date) || ''))
+      .filter(r => !q || (r.title || '').toLowerCase().indexOf(q) > -1)
+      .map(r => {
+        const log = r._log || s.dnf.find(d => this.key(d.title) === this.key(r.title));
+        return {
+          id: r.id, title: r.title, cover: r.cover || '', hasCover: !!r.cover, imgStyle: this.bg(r.cover),
+          dateLabel: this.fmt(r.finish || (log && log.date)) || 'No date',
+          reason: (log && log.reason) || 'Reason not logged',
+          thoughts: (log && log.thoughts) || r.notes || ''
+        };
+      });
+
+    const tiers = uniq((L.order || []).concat(s.tbr.map(t => t.order)).concat(s.tbr.some(t => !t.order) ? ['Unsorted'] : []));
+    const tbrList = s.tbr.filter(t => s.tbrTier === 'All' || (t.order || 'Unsorted') === s.tbrTier).map(t => ({
+      id: t.id, title: t.title, author: t.author, cover: t.cover, hasCover: !!t.cover, imgStyle: this.bg(t.cover),
+      info: (t.info || t.notes || '').slice(0, 130),
+      meta: [t.pages ? t.pages + ' pages' : '', t.price || ''].filter(Boolean).join(' · '),
+      order: t.order || 'Unsorted', unsynced: this.stateOf('To Be Read', t) !== 'synced'
+    }));
+
+    const mq = s.mvQ.trim().toLowerCase();
+    const movieList = s.movies.filter(m => {
+      if (s.mv.watch !== 'All' && m.watch !== s.mv.watch) return false;
+      if (s.mv.rating !== 'All' && m.rating !== s.mv.rating) return false;
+      if (s.mv.spice !== 'All' && m.spice !== s.mv.spice) return false;
+      if (s.mv.swoon !== 'All' && m.swoon !== s.mv.swoon) return false;
+      if (s.mv.status === 'Released' && !this.isOut(m)) return false;
+      if (s.mv.status === 'Upcoming' && this.isOut(m)) return false;
+      return !mq || m.title.toLowerCase().indexOf(mq) > -1;
+    }).sort((a, b) => {
+      const ua = !this.isOut(a), ub = !this.isOut(b);
+      if (ua !== ub) return ua ? -1 : 1;
+      if (ua && ub) return (a.release || '9999').localeCompare(b.release || '9999');
+      return 0;
+    }).map(m => ({
+      id: m.id, title: m.title, cover: m.cover, hasCover: !!m.cover, imgStyle: this.bg(m.cover),
+      meta: [this.isOut(m) ? m.watch : (m.release ? 'Out ' + this.fmt(m.release) : 'Not out yet'), m.rating,
+        m.spice && m.spice !== '-' ? 'Spice ' + m.spice : '', m.swoon && m.swoon !== '-' ? 'Swoon ' + m.swoon : ''].filter(Boolean).join(' · '),
+      vibe: (m.vibe || '').slice(0, 220),
+      unsynced: this.stateOf('Movies', m) !== 'synced'
+    }));
+    const opts = (vals, label) => [{ v: 'All', label: label }].concat(uniq(vals).sort().map(v => ({ v: v, label: v })));
+    const mvFilters = [
+      { k: 'watch', value: s.mv.watch, opts: opts(s.movies.map(m => m.watch), 'Any platform') },
+      { k: 'rating', value: s.mv.rating, opts: opts(s.movies.map(m => m.rating), 'Any ranking') },
+      { k: 'spice', value: s.mv.spice, opts: opts(s.movies.map(m => m.spice), 'Any spice') },
+      { k: 'swoon', value: s.mv.swoon, opts: opts(s.movies.map(m => m.swoon), 'Any swoon') },
+      { k: 'status', value: s.mv.status, opts: [{ v: 'All', label: 'Out or upcoming' }, { v: 'Released', label: 'Out now' }, { v: 'Upcoming', label: 'Not out yet' }] }
+    ];
+    const soonAll = s.movies.filter(m => m.release && !m.released).sort((a, b) => a.release.localeCompare(b.release));
+    const todayIso = this.today();
+    const soon = soonAll.slice(0, 4).map(m => {
+      const out = m.release <= todayIso;
+      const d = this.days(todayIso, m.release);
+      return {
+        id: m.id, title: m.title, isOut: out,
+        note: out ? 'Out now — ' + (m.watch || 'check your platforms') : 'In ' + d + ' day' + (d === 1 ? '' : 's') + ' · ' + this.fmt(m.release),
+        rowStyle: 'display:flex;align-items:center;gap:11px;background:var(--s1);border:1px solid ' + (out ? 'var(--acc)' : 'var(--line)') + ';border-radius:14px;padding:11px 13px'
+      };
+    });
+
+    const year = s.year || String(new Date().getFullYear());
+    const finishedYear = s.books.filter(b => b.status === 'Finished' && (b.finish || '').slice(0, 4) === year);
+    const pagesYear = finishedYear.reduce((n, b) => n + (this.num(b.pages) || 0), 0);
+    const daysRead = uniq(finishedYear.map(b => b.finish)).length;
+    const dnfYear = dnfList.filter(r => (r.dateLabel || '').indexOf(year) > -1).length;
+    const genreCount = {};
+    finishedYear.forEach(b => { if (b.genre) genreCount[b.genre] = (genreCount[b.genre] || 0) + 1; });
+    const genreSorted = Object.keys(genreCount).sort((a, b) => genreCount[b] - genreCount[a]).slice(0, 6);
+    const gMax = genreSorted.length ? genreCount[genreSorted[0]] : 1;
+    const fiveStarBooks = finishedYear.filter(b => this.stars(b.rating) >= 5).sort(byRecent);
+    const fiveStar = fiveStarBooks.length;
+    const longest = finishedYear.slice().sort((a, b) => (this.num(b.pages) || 0) - (this.num(a.pages) || 0))[0];
+    const paced = finishedYear.map(b => ({ b, d: this.days(b.start, b.finish) })).filter(x => x.d != null && x.d > 0).sort((a, b) => a.d - b.d)[0];
+    const topRated = finishedYear.slice().sort((a, b) => this.stars(b.rating) - this.stars(a.rating))[0];
+    const feelCount = {};
+    finishedYear.forEach(b => { if (b.feel) feelCount[b.feel] = (feelCount[b.feel] || 0) + 1; });
+    const topFeel = Object.keys(feelCount).sort((a, b) => feelCount[b] - feelCount[a])[0];
+    const bests = [];
+    if (topRated) bests.push({ label: 'Highest rated', title: topRated.title, note: (topRated.rating || '') + ' · ' + this.fmt(topRated.finish), cover: topRated.cover, hasCover: !!topRated.cover, imgStyle: this.bg(topRated.cover) });
+    if (longest && this.num(longest.pages)) bests.push({ label: 'Longest read', title: longest.title, note: longest.pages + ' pages', cover: longest.cover, hasCover: !!longest.cover, imgStyle: this.bg(longest.cover) });
+    if (paced) bests.push({ label: 'Fastest finish', title: paced.b.title, note: paced.d + ' day' + (paced.d === 1 ? '' : 's') + ' start to finish', cover: paced.b.cover, hasCover: !!paced.b.cover, imgStyle: this.bg(paced.b.cover) });
+    if (topFeel) bests.push({ label: 'The feeling of the year', title: topFeel, note: feelCount[topFeel] + ' books felt like this', cover: '', hasCover: false, imgStyle: 'display:none' });
+
+    const cm = s.calMonth == null ? new Date().getMonth() : s.calMonth;
+    const startDow = new Date(+year, cm, 1).getDay();
+    const dim = new Date(+year, cm + 1, 0).getDate();
+    const prevDim = new Date(+year, cm, 0).getDate();
+    const mStart = year + '-' + String(cm + 1).padStart(2, '0') + '-01';
+    const mEnd = year + '-' + String(cm + 1).padStart(2, '0') + '-' + String(dim).padStart(2, '0');
+    const byDay = {};
+    s.books.forEach(b => {
+      if (b.status !== 'Finished' && b.status !== 'DNF' && b.status !== 'Started' && b.status !== 'Re-Read') return;
+      const from = (b.start || b.finish || '').slice(0, 10);
+      const openEnded = (b.status === 'Started' || b.status === 'Re-Read') && !b.finish && !!from;
+      const to = openEnded ? this.today() : (b.finish || b.start || '').slice(0, 10);
+      if (!from && !to) return;
+      const a = (from && to ? (from <= to ? from : to) : (from || to));
+      const z = (from && to ? (from <= to ? to : from) : (from || to));
+      if (z < mStart || a > mEnd) return;
+      const d0 = a < mStart ? 1 : +a.slice(8, 10);
+      const d1 = z > mEnd ? dim : +z.slice(8, 10);
+      for (let d = d0; d <= d1; d++) {
+        const last = d === d1 && z <= mEnd;
+        (byDay[d] = byDay[d] || []).push({ b: b, last: last });
+      }
+    });
+    const cellBase = 'position:relative;border:0;padding:0;border-radius:10px;aspect-ratio:1/1.2;overflow:hidden;font-family:var(--b);';
+    const numStyle = color => 'position:relative;z-index:2;padding:3px 0 0;text-align:center;font-size:10px;font-weight:600;color:' + color;
+    const outside = n => ({
+      day: String(n), iso: '', covers: [], hasMore: false, moreLabel: '', stackCount: 0, style: cellBase + 'background:transparent;cursor:default',
+      dayStyle: numStyle('var(--line)'), imgStyle: 'display:none', hasCover: false, hasDot: false, dotStyle: '', cover: ''
+    });
+    const calCells = [];
+    for (let i = startDow; i > 0; i--) calCells.push(outside(prevDim - i + 1));
+    const nowIso = this.today();
+    for (let d = 1; d <= dim; d++) {
+      const hits = byDay[d];
+      const lead = hits && (hits.filter(x => x.last)[0] || hits[0]);
+      const book = lead && lead.b;
+      const cover = book && book.cover ? book.cover : '';
+      const mark = book ? (book.status === 'DNF' ? 'var(--alt)' : 'var(--acc)') : '';
+      const isToday = (year + '-' + String(cm + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0')) === nowIso;
+      const stack = (hits || []).map(x => x.b).filter((b, i, a) => a.indexOf(b) === i);
+      const shown = stack.filter(b => b.cover).slice(0, 3);
+      calCells.push({
+        day: String(d), iso: year + '-' + String(cm + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0'),
+        covers: shown.map((b, i) => ({
+          style: 'position:absolute;inset:0;border-radius:5px;overflow:hidden;background-image:url("' + b.cover + '");background-size:cover;background-position:center;'
+            + 'transform:translate(' + (i * 2.5) + 'px,' + (i * -2.5) + 'px) rotate(' + ((i - (shown.length - 1) / 2) * 5) + 'deg);'
+            + 'box-shadow:0 2px 6px rgba(0,0,0,.5);z-index:' + (3 - i)
+        })),
+        hasMore: stack.length > 3, moreLabel: '+' + (stack.length - 3),
+        style: cellBase + 'background:var(--s2);' + (book ? 'cursor:pointer;' : 'cursor:default;')
+          + (isToday ? 'outline:2px solid var(--ink);outline-offset:-2px;' : (book ? 'outline:1px solid ' + mark + ';outline-offset:-1px;' : '')),
+        dayStyle: numStyle(isToday ? 'var(--ink)' : (mark || 'var(--dim)')),
+        imgStyle: this.bg(cover),
+        hasCover: !!(book && s.calFull && cover), stackCount: stack.length,
+        hasDot: !!(book && (!s.calFull || !cover)),
+        dotStyle: 'position:absolute;left:50%;bottom:5px;transform:translateX(-50%);width:6px;height:6px;border-radius:999px;background:' + (mark || 'transparent'),
+        cover: cover
+      });
+    }
+    while (calCells.length % 7) calCells.push(outside(calCells.length - startDow - dim + 1));
+    const finCount = s.books.filter(b => b.status === 'Finished' && (b.finish || '').slice(0, 7) === mStart.slice(0, 7)).length;
+    const readDays = Object.keys(byDay).length;
+
+    const tbrRec = s.tbr.find(t => t.id === s.detailId);
+    const tbrDetail = tbrRec ? {
+      id: tbrRec.id, title: tbrRec.title, author: tbrRec.author, cover: tbrRec.cover, hasCover: !!tbrRec.cover, imgStyle: this.bg(tbrRec.cover),
+      order: tbrRec.order || 'Unsorted',
+      rows: [
+        { label: 'Page length', value: tbrRec.pages ? tbrRec.pages + ' pages' : 'Not logged' },
+        { label: 'Price', value: tbrRec.price || 'Not logged' },
+        { label: 'In the sheet', value: this.stateOf('To Be Read', tbrRec) === 'synced' ? 'Yes' : 'Not yet' }
+      ],
+      hasSummary: !!(tbrRec.notes || tbrRec.info),
+      summary: tbrRec.notes || tbrRec.info || ''
+    } : { id: '', title: '', author: '', cover: '', hasCover: false, imgStyle: 'display:none', order: '', rows: [], hasSummary: false, summary: '' };
+
+    const dayHits = s.dayIso ? (byDay[+s.dayIso.slice(8, 10)] || []) : [];
+    const dayBooks = dayHits.map(x => x.b).filter((b, i, a) => a.indexOf(b) === i).map(b => ({
+      id: b.id, title: b.title, author: b.author, hasCover: !!b.cover, imgStyle: this.bg(b.cover),
+      rating: b.rating || '', summary: (b.summary || b.notes || 'No summary logged.').slice(0, 420),
+      dayNote: b.finish === s.dayIso ? (b.status === 'DNF' ? 'Put it down this day' : 'Finished this day')
+        : (b.start === s.dayIso ? 'Started this day' : 'Reading')
+    }));
+
+    const detailBook = s.books.find(b => b.id === s.detailId);
+    const detail = detailBook ? {
+      id: detailBook.id, title: detailBook.title, author: detailBook.author, cover: detailBook.cover, hasCover: !!detailBook.cover, imgStyle: this.bg(detailBook.cover),
+      rating: detailBook.rating || '',
+      genreLine: [detailBook.genre, detailBook.series].filter(Boolean).join(' | ') || (detailBook.format || 'Book'),
+      scoreLabel: this.stars(detailBook.rating) ? this.stars(detailBook.rating) + ' of 5' : 'Not rated',
+      meta: [detailBook.status, detailBook.genre, detailBook.format, detailBook.pages ? detailBook.pages + ' pages' : '',
+        detailBook.finish ? 'Finished ' + this.fmt(detailBook.finish) : (detailBook.start ? 'Started ' + this.fmt(detailBook.start) : '')].filter(Boolean).join(' · '),
+      isReading: detailBook.status === 'Started',
+      hasFeel: !!detailBook.feel, feel: detailBook.feel,
+      hasSummary: !!detailBook.summary, summary: detailBook.summary,
+      hasNotes: !!detailBook.notes, notes: detailBook.notes
+    } : { id: '', title: '', author: '', cover: '', hasCover: false, imgStyle: 'display:none', rating: '', genreLine: '', scoreLabel: '', meta: '', isReading: false, hasFeel: false, feel: '', hasSummary: false, summary: '', hasNotes: false, notes: '' };
+
+    const visible = this.exportVisible();
+    const t = s.target;
+    const newN = this.poolOf(t).filter(r => this.stateOf(t, r) === 'new').length;
+    const chgN = this.poolOf(t).filter(r => this.stateOf(t, r) === 'changed').length;
+    const syncN = this.poolOf(t).length - newN - chgN;
+    const pickedN = Object.keys(s.picked).filter(k => s.picked[k]).length;
+    const exportList = visible.map(r => {
+      const st = this.stateOf(t, r);
+      const on = !!s.picked[r.id];
+      return {
+        id: r.id, title: r.title || r.date || '—',
+        note: st === 'new' ? 'Not in the sheet' : st === 'changed' ? 'Differs from the sheet' : 'Already in the sheet',
+        check: on ? '✓' : '',
+        style: 'display:flex;align-items:center;gap:11px;width:100%;border:0;border-bottom:1px solid var(--line);cursor:pointer;padding:11px 12px;min-height:52px;background:' + (on ? 'var(--s2)' : 'transparent') + ';color:var(--ink);',
+        boxStyle: 'flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:700;'
+          + (on ? 'background:var(--acc);color:var(--accInk);border:1px solid var(--acc);' : 'background:transparent;color:transparent;border:1px solid var(--line);')
+      };
+    });
+
+    const pendN = this.pendingAll();
+    const lk = s.lk;
+    const cand = lk.res[lk.i] || { title: '', author: '', cover: '', summary: '', pagesLabel: '' };
+    cand.hasCover = !!cand.cover;
+    cand.imgStyle = this.bg(cand.cover);
+    if (lk.res[lk.i]) cand.pagesLabel = cand.pages ? cand.pages + ' pages · Open Library' : 'Open Library';
+
+    const titles = {
+      today: ['Today', 'Where you are'], library: ['Library', String(s.books.length) + ' books'],
+      tbr: ['To be read', String(s.tbr.length) + ' waiting'], movies: ['Movies', String(s.movies.length) + ' recs'],
+      stats: ['Stats', 'Your reading year'], settings: ['Settings', 'Sheet and app']
+    };
+    const tt = titles[s.screen] || titles.today;
+
+    const icons = {
+      today: 'M3 10.5 12 3l9 7.5V21H3z',
+      library: 'M4 4h6v16H4zM14 4h6v16h-6z',
+      tbr: 'M6 3h12v18l-6-4-6 4z',
+      movies: 'M3 5h18v14H3zM7 5v14M17 5v14',
+      stats: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
+      settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2 2 2 0 1 1-4 0 1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a2 2 0 1 1 0-4 1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 2.9-1.2 2 2 0 1 1 4 0A1.7 1.7 0 0 0 18.4 5.4l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9 2 2 0 1 1 0 4z'
+    };
+    const tabs = [['today', 'Today'], ['library', 'Library'], ['tbr', 'TBR'], ['movies', 'Movies'], ['stats', 'Stats']]
+      .map(([v, label]) => ({ v, label, icon: icons[v], style: this.tabStyle(s.screen === v), labelStyle: this.tabLabel(s.screen === v) }));
+
+    const modalTitles = {
+      detail: detailBook ? detailBook.title : 'Book', close: 'Close out a book', start: 'Start a book',
+      tbrAdd: 'Add to the TBR', movie: 'Add a movie', export: 'Take it out', tbrDetail: 'On the list', day: this.fmt(s.dayIso)
+    };
+
+    return {
+      rootClass: 'rt ' + (s.theme === 'light' ? 'rt-light' : 'rt-dark'),
+      kicker: tt[1], title: tt[0],
+      isToday: s.screen === 'today', isLib: s.screen === 'library', isTbr: s.screen === 'tbr',
+      isMovies: s.screen === 'movies', isStats: s.screen === 'stats', isSet: s.screen === 'settings',
+      tabs, onNav: this.onNav, goSettings: this.goSettings,
+      hasPending: pendN > 0, pendingLabel: pendN + ' to sync',
+      pendingSub: pendN ? pendN + ' new or changed' : 'All rows match the sheet',
+
+      reading, recent, onDetail: this.onDetail, onCloseOut: this.onCloseOut,
+      openStart: this.openStart, openTbrAdd: this.openTbrAdd, openClose: this.openClose, openExport: this.openExport,
+
+      libQ: s.libQ, onLibQ: this.onLibQ, libSort: s.libSort, onLibSort: this.onLibSort,
+      sortOpts: [{ v: 'recent', label: 'Most recent' }, { v: 'title', label: 'Title A–Z' }, { v: 'rating', label: 'Highest rated' }],
+      libTabs: libTabDefs.map(([label, v]) => ({ label, v, style: this.pill(s.libTab === v) })),
+      onLibTab: this.onLibTab,
+      isDnfTab: s.libTab === 'DNF', showLibList: s.libTab !== 'DNF',
+      libCount: (s.libTab === 'DNF' ? dnfList.length : libList.length) + ' shown',
+      libList: libList.map(b => ({
+        id: b.id, title: b.title, author: b.author, cover: b.cover, status: b.status,
+        dateLabel: this.fmt(this.when(b)) || 'No date', rating: b.rating || '', hasCover: !!b.cover, imgStyle: this.bg(b.cover),
+        unsynced: this.stateOf('Tracker', b) !== 'synced'
+      })),
+      dnfList,
+
+      tbrTier: s.tbrTier, onTbrTier: this.onTbrTier,
+      tierOpts: [{ v: 'All', label: 'All tiers' }].concat(tiers.map(v => ({ v, label: v }))),
+      tbrList, onStartFromTbr: this.onStartFromTbr,
+
+      mvQ: s.mvQ, onMvQ: this.onMvQ, mvFilters, onMvFilter: this.onMvFilter, clearMv: this.clearMv,
+      movieList, mvCount: movieList.length + ' of ' + s.movies.length, openMovieAdd: this.openMovieAdd,
+
+      year, yearOpts: uniq(s.books.map(b => (b.finish || '').slice(0, 4))).sort().reverse(),
+      onYear: this.onYear,
+      statsHeadline: 'Your reading year at a glance',
+      statsSub: finishedYear.length + ' books finished · ' + daysRead + ' days read',
+      statCards: [
+        { value: String(finishedYear.length), label: 'Books in ' + year },
+        { value: pagesYear ? (pagesYear > 9999 ? Math.round(pagesYear / 1000) + 'k' : String(pagesYear)) : '—', label: 'Pages read' },
+        { value: String(fiveStar), label: 'Five star' },
+        { value: String(dnfYear), label: 'Did not finish' },
+        { value: genreSorted[0] ? String(genreCount[genreSorted[0]]) : '—', label: genreSorted[0] || 'Top genre' },
+        { value: finishedYear.length ? String(Math.round(finishedYear.length / 12 * 10) / 10) : '—', label: 'Books a month' }
+      ],
+      genreBars: genreSorted.map(g => ({
+        label: g, n: String(genreCount[g]),
+        barStyle: 'height:100%;border-radius:999px;background:var(--acc);width:' + Math.round(genreCount[g] / gMax * 100) + '%'
+      })),
+      calMonthNum: String(cm + 1).padStart(2, '0'), calMonthName: M[cm],
+      dowNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      calCells, prevMonth: this.prevMonth, nextMonth: this.nextMonth,
+      setCompact: this.setCompact, setFull: this.setFull,
+      compactStyle: this.seg(!s.calFull), fullStyle: this.seg(s.calFull),
+      calFoot: finCount + ' book' + (finCount === 1 ? '' : 's') + ' finished in ' + M[cm] + ' · ' + readDays + ' day' + (readDays === 1 ? '' : 's') + ' with a book open',
+      onCalDay: this.onCalDay,
+
+      darkStyle: this.seg(s.theme !== 'light'), lightStyle: this.seg(s.theme === 'light'),
+      setDark: this.setDark, setLight: this.setLight,
+      onWelcomeCover: this.onWelcomeCover, resetWelcomeCover: this.resetWelcomeCover,
+      welcomeCoverLine: s.welcomeCover ? 'Using your custom image.' : 'Using the original image.',
+      syncLine: pendN ? pendN + ' row' + (pendN === 1 ? '' : 's') + ' waiting to go out' : 'Everything matches your last import',
+      pasteText: s.pasteText, onPaste: this.onPaste, doPasteImport: this.doPasteImport, onFile: this.onFile,
+      counts: [
+        { label: 'Tracker', n: String(s.books.length) }, { label: 'To be read', n: String(s.tbr.length) },
+        { label: 'Movies', n: String(s.movies.length) }, { label: 'DNF log', n: String(s.dnf.length) }
+      ],
+      resetAll: this.resetAll,
+
+      hasModal: !!s.modal, modalTitle: modalTitles[s.modal] || '', closeModal: this.closeModal,
+      mDetail: s.modal === 'detail', detail, savePage: this.savePage, copyOne: this.copyOne,
+      mClose: s.modal === 'close', needsPick: s.modal === 'close' && !s.f.id, hasPickedBook: s.modal === 'close' && !!s.f.id,
+      isFinishing: s.f.kind === 'Finished', isDnfing: s.f.kind === 'DNF',
+      finStyle: this.seg(s.f.kind === 'Finished'), dnfStyle: this.seg(s.f.kind === 'DNF'),
+      setFinished: this.setFinished, setDnf: this.setDnf, saveClose: this.saveClose,
+      reviewLabel: s.f.kind === 'DNF' ? 'What happened' : 'Review',
+      ratingOpts: L.rating || [], feelOpts: L.feel || [],
+      reasonOpts: L.dnfReason || ['Plot Holes / Predictable', 'Pacing', 'Not for me'],
+      formatOpts: L.format || [], genreOpts: L.genre || [], orderOpts: L.order || [],
+      selRating: this.sel(!s.f.rating), selFeel: this.sel(!s.f.feel), selReason: this.sel(!s.f.reason),
+      selFormat: this.sel(!s.f.format), selGenre: this.sel(!s.f.genre), selOrder: this.sel(!s.f.order),
+      selMvRating: this.sel(!s.f.rating), selSpice: this.sel(!s.f.spice, 'flex:1;min-width:0;'), selSwoon: this.sel(!s.f.swoon, 'flex:1;min-width:0;'),
+      setOut: this.setOut, setUnreleased: this.setUnreleased,
+      outStyle: this.seg(s.f.released !== false), unreleasedStyle: this.seg(s.f.released === false),
+      releaseHint: s.f.released === false ? 'It sits at the top of the movie list until the date arrives, then flags itself as out.' : 'Optional — the date it came out.',
+
+      mLookup: s.modal === 'start' || s.modal === 'tbrAdd', mStart: s.modal === 'start', mTbrAdd: s.modal === 'tbrAdd',
+      showTbrSource: s.modal === 'start' && s.tbr.length > 0,
+      tbrQuick: s.tbr.map(t => ({ id: t.id, title: t.title, cover: t.cover, hasCover: !!t.cover, imgStyle: this.bg(t.cover) })),
+      lookupLabel: 'Look it up', lookupBtn: lk.busy ? '…' : 'Search',
+      lk: { q: lk.q, err: lk.err }, onLq: this.onLq, doLookup: this.doLookup,
+      hasCandidate: lk.res.length > 0, cand,
+      candIndex: lk.res.length ? 'Match ' + (lk.i + 1) + ' of ' + lk.res.length : '',
+      acceptCand: this.acceptCand, rejectCand: this.rejectCand,
+      saveLookup: this.saveLookup, saveLabel: s.modal === 'start' ? 'Start reading it' : 'Add to TBR',
+
+      mMovie: s.modal === 'movie', saveMovie: this.saveMovie,
+      mvRatingOpts: uniq(s.movies.map(m => m.rating)).sort(),
+      spiceOpts: uniq(s.movies.map(m => m.spice)), swoonOpts: uniq(s.movies.map(m => m.swoon)),
+      hasSoon: soon.length > 0, soon, markReleased: this.markReleased,
+      hasFiveStar: fiveStar > 0, noFiveStar: fiveStar === 0,
+      fiveStarList: fiveStarBooks.map(b => ({ id: b.id, title: b.title, cover: b.cover, hasCover: !!b.cover, imgStyle: this.bg(b.cover), dateLabel: this.fmt(b.finish) })),
+      bests,
+      showWelcome: s.ready && s.gate === 'welcome', showLock: s.ready && s.gate === 'lock',
+      goLock: this.goLock, onKey: this.onKey, pinErr: s.pinErr,
+      pinDots: [0, 1, 2, 3].map(i => ({ style: 'width:11px;height:11px;border-radius:999px;border:1px solid var(--ink);background:' + (i < s.pin.length ? 'var(--ink)' : 'transparent') })),
+      keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del'].map(k => ({
+        v: k, label: k === 'del' ? '⌫' : k,
+        style: k === '' ? 'visibility:hidden;min-height:56px;border:0;background:transparent'
+          : 'min-height:56px;border:1px solid var(--line);backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);border-radius:22px;background:var(--s1);color:var(--ink);font-family:var(--d);font-size:20px;cursor:pointer'
+      })),
+      passDraft: s.passDraft, onPassDraft: this.onPassDraft, savePass: this.savePass, clearPass: this.clearPass,
+      passLine: s.pass ? 'A four digit passcode is on. Enter a new one to change it.' : 'No passcode — the app opens straight to Today.',
+      mDay: s.modal === 'day',
+      dayCount: dayBooks.length + (dayBooks.length === 1 ? ' book open' : ' books open') + ' on this day',
+      dayBooks,
+      mTbrDetail: s.modal === 'tbrDetail', tbrDetail, onTbrDetail: this.onTbrDetail, copyTbrRow: this.copyTbrRow,
+      onTbrOrder: this.onTbrOrder, selTbrOrder: this.sel(false),
+      tierSetOpts: uniq((L.order || []).concat(['Unsorted'])),
+
+      mExport: s.modal === 'export', target: s.target, onTarget: this.onTarget,
+      targetOpts: ['Tracker', 'To Be Read', 'Movies', 'DNF Log'],
+      exportSummary: newN + ' new · ' + chgN + ' changed · ' + syncN + ' already in the sheet',
+      exportList, exportEmpty: exportList.length === 0, onPick: this.onPick,
+      selectLabel: pickedN && pickedN >= exportList.length ? 'Clear all' : 'Select all shown',
+      showAllLabel: s.showAll ? 'Hide synced rows' : 'Show all rows',
+      selectAll: this.selectAll, toggleShowAll: this.toggleShowAll,
+      copyLabel: pickedN ? 'Copy ' + pickedN + ' row' + (pickedN === 1 ? '' : 's') : 'Copy rows',
+      doCopy: this.doCopy, doXlsx: this.doXlsx, doCsv: this.doCsv,
+
+      f: {
+        page: s.f.page == null ? '' : s.f.page, date: s.f.date || '', rating: s.f.rating || '', feel: s.f.feel || '',
+        reason: s.f.reason || '', notes: s.f.notes || '', title: s.f.title || '', author: s.f.author || '',
+        cover: s.f.cover || '', hasCover: !!s.f.cover, imgStyle: this.bg(s.f.cover), pages: s.f.pages || '', format: s.f.format || '', genre: s.f.genre || '',
+        order: s.f.order || '', info: s.f.info || '', watch: s.f.watch || '', spice: s.f.spice || '',
+        swoon: s.f.swoon || '', vibe: s.f.vibe || '', price: s.f.price || '', summary: s.f.summary || '',
+        release: s.f.release || ''
+      },
+      onF: this.onF,
+      toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
