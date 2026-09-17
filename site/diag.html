@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Diag">
+<meta name="theme-color" content="#141210">
+<title>Diag</title>
+<script>
+  function sizeDiag() {
+    var standalone = window.navigator.standalone === true ||
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+    var portrait = !window.matchMedia || window.matchMedia('(orientation: portrait)').matches;
+    var fullScreenHeight = portrait
+      ? Math.max(window.screen.width || 0, window.screen.height || 0)
+      : Math.min(window.screen.width || 0, window.screen.height || 0);
+    var browserHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    var height = standalone && fullScreenHeight ? fullScreenHeight : browserHeight;
+    document.documentElement.style.setProperty('--rt-app-height', Math.round(height) + 'px');
+  }
+  sizeDiag();
+  addEventListener('pageshow', sizeDiag);
+  addEventListener('resize', sizeDiag);
+</script>
+<style>
+  html, body { margin:0; padding:0; height:var(--rt-app-height, 100vh); background:#141210; color:#f4efe7;
+    font:14px/1.5 ui-monospace, monospace; }
+  #fill { position:absolute; inset:0; border:3px solid #e0b168; box-sizing:border-box;
+    display:flex; flex-direction:column; }
+  #pad { flex:none; height:env(safe-area-inset-top); background:rgba(224,177,104,.35); }
+  #mid { flex:1; min-height:0; overflow:auto; padding:14px 16px; }
+  #bar { flex:none; background:rgba(15,120,140,.5); text-align:center;
+    padding:10px 0 calc(env(safe-area-inset-bottom) + 10px); }
+  b { color:#e0b168; font-weight:700; }
+  div.row { display:flex; justify-content:space-between; gap:12px; padding:3px 0;
+    border-bottom:1px solid rgba(255,255,255,.08); }
+</style>
+</head>
+<body>
+<div id="fill">
+  <div id="pad"></div>
+  <div id="mid">
+    <p style="margin:0 0 12px"><b>Gold border</b> = edge of the app box.<br>
+    Gold bar = top safe area. Teal bar = bottom tab bar.</p>
+    <div id="out"></div>
+  </div>
+  <div id="bar">TAB BAR SITS HERE</div>
+</div>
+<script>
+  function px(n) { return Math.round(n) + 'px'; }
+  function read(name) {
+    var p = document.createElement('div');
+    p.style.height = 'env(safe-area-inset-' + name + ')';
+    document.body.appendChild(p);
+    var v = getComputedStyle(p).height;
+    p.remove();
+    return v;
+  }
+  function render() {
+    var vv = window.visualViewport;
+    var rows = [
+      ['standalone mode', String(window.navigator.standalone)],
+      ['screen.height', px(screen.height)],
+      ['window.innerHeight', px(window.innerHeight)],
+      ['visualViewport.height', vv ? px(vv.height) : 'n/a'],
+      ['documentElement.clientHeight', px(document.documentElement.clientHeight)],
+      ['configured app height', getComputedStyle(document.documentElement).getPropertyValue('--rt-app-height')],
+      ['100vh resolves to', getComputedStyle(document.getElementById('fill')).height],
+      ['devicePixelRatio', String(window.devicePixelRatio)],
+      ['safe-area top', read('top')],
+      ['safe-area bottom', read('bottom')]
+    ];
+    document.getElementById('out').innerHTML = rows.map(function (r) {
+      return '<div class="row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>';
+    }).join('');
+  }
+  render();
+  addEventListener('resize', render);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', render);
+</script>
+</body>
+</html>
